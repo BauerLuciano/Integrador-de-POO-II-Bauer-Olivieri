@@ -95,6 +95,6 @@ Ejemplo:
 Ejemplo:
 
 ```bash
-git clone <(https://github.com/BauerLuciano/Integrador-de-POO-II-Bauer-Olivieri.git)>
+git clone <https://github.com/BauerLuciano/Integrador-de-POO-II-Bauer-Olivieri.git>
 cd proyecto
 comando-para-ejecutar (ver despues que ponemos)
