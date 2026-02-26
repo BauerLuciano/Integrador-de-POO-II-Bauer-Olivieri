@@ -1,24 +1,26 @@
-# Sistema de Gestión de Alquileres Temporarios 🏠
+# Sistema de Gestión de Alquileres Temporarios
 
-## Descripción del Proyecto
-[cite_start]Este proyecto consiste en un sistema integral desarrollado para administrar propiedades en alquiler temporario[cite: 3]. [cite_start]Permite a una inmobiliaria gestionar de manera eficiente propietarios, inquilinos, reservas y liquidaciones[cite: 3]. [cite_start]El sistema está diseñado para manejar condiciones particulares por propiedad (precio, depósito, políticas), múltiples esquemas de comisión, excepciones de calendario y generación de reportes[cite: 6, 7].
+Este proyecto consiste en desarrollar un sistema para administrar propiedades en alquiler temporario, gestionando propietarios, inquilinos, reservas y liquidaciones[cite: 3]. [cite_start]Permite a una inmobiliaria administrar propiedades de distintos propietarios que se alquilan por períodos cortos[cite: 5]. [cite_start]El sistema está diseñado para manejar condiciones particulares por propiedad (precio por noche, depósito, política de cancelación) y distintos esquemas de comisión pactados con la inmobiliaria[cite: 6]. 
 
-Desarrollado como trabajo integrador para la materia **Programación Orientada a Objetos II**.
+Desarrollado como trabajo integrador para la materia Programación Orientada a Objetos II.
 
-##  Características Principales
-* [cite_start]**Gestión de Propiedades y Propietarios:** Alta y modificación de propiedades, asociadas a esquemas de comisión específicos (fijo, escalonado, etc.)[cite: 9].
-* [cite_start]**Gestión de Reservas:** Control de disponibilidad, aplicación de tarifas, cálculo de depósitos y manejo de excepciones (mantenimiento, uso personal)[cite: 7, 10].
-* [cite_start]**Cancelaciones y Penalidades:** Aplicación de políticas de anulación según la anticipación (sin cargo, cargo parcial o total)[cite: 11].
-* [cite_start]**Registro de Cobros:** Imputación de pagos con soporte para señas, pagos parciales y saldos[cite: 13].
-* [cite_start]**Liquidaciones Mensuales:** Cálculo automático para propietarios, descontando comisiones, gastos de mantenimiento y penalidades[cite: 12].
-* [cite_start]**Reportes e Historial:** Consulta de ocupación, ingresos por propietario y rentabilidad por período[cite: 14].
+## Características Principales
 
-##  Estructura de Documentación (`/docs`)
-El ciclo de vida del proyecto se divide en 2 iteraciones a lo largo de 4 semanas, documentadas en la carpeta `docs/`:
-* [cite_start]`erp.md`: Especificación de requisitos de software[cite: 15].
-* [cite_start]`roadmap.md`: Planificación de historias de usuario y releases[cite: 16].
-* [cite_start]`dp-iteracion-1.md` / `dp-iteracion-2.md`: Diseño OO (UML), wireframes, backlog y tareas por iteración[cite: 17, 18, 19].
-* [cite_start]`retrospectiva-iteracion-1.md` / `retrospectiva-iteracion-2.md`: Análisis y mejoras post-iteración[cite: 20, 23].
+* [cite_start]**Gestión de Propiedades y Propietarios:** Alta y modificación de propiedades con sus condiciones, y asociación al propietario con su esquema de comisión (porcentaje fijo, escalonado por monto, etc.)[cite: 9].
+* [cite_start]**Gestión de Reservas:** Registro de reservas con validación de disponibilidad, aplicación de tarifas y cálculo de depósito[cite: 10]. [cite_start]Las reservas pueden solaparse con excepciones (mantenimiento, uso personal del propietario)[cite: 7].
+* [cite_start]**Cancelaciones y Penalidades:** Anulación de reservas aplicando la política correspondiente según la anticipación con que se cancela (sin cargo, cargo parcial o total)[cite: 11].
+* [cite_start]**Registro de Cobros e Imputación:** Registro de pagos de reservas con soporte para señas, pagos parciales y saldo al ingreso[cite: 13].
+* [cite_start]**Liquidaciones Mensuales:** Generación de liquidaciones mensuales descontando comisiones, gastos de mantenimiento y penalidades aplicables[cite: 12].
+* [cite_start]**Reportes e Historial:** Consulta del historial de ocupación por propiedad, ingresos por propietario y rentabilidad por período[cite: 14].
+
+## Estructura de Documentación (`/docs`)
+
+El ciclo de vida del proyecto se divide en 2 iteraciones a lo largo de 4 semanas, y toda la planificación se encuentra en la carpeta `docs/`.
+
+* [cite_start]`docs/erp.md`: Un documento de especificación de requisitos de software para el proyecto[cite: 15].
+* [cite_start]`docs/roadmap.md`: Un plan tentativo de las historias de usuario que se entregarán en cada iteración[cite: 16].
+* [cite_start]`docs/dp-iteracion-X.md`: Documento de diseño y planificación para la iteración X[cite: 17]. [cite_start]Incluye el trabajo en equipo, diagrama de clases UML, wireframes, casos de uso, backlog y tareas[cite: 17, 18, 19].
+* [cite_start]`docs/retrospectiva-iteracion-X.md`: Documento de retrospectiva que debe completarse tan pronto como se complete la iteración para reflexionar sobre lo cumplido y los retos[cite: 20, 23].
 
 ##  Instrucciones de Ejecución
 
