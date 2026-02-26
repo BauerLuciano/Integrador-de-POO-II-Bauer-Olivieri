@@ -1,36 +1,100 @@
 # Sistema de Gestión de Alquileres Temporarios
 
-Este proyecto consiste en desarrollar un sistema para administrar propiedades en alquiler temporario, gestionando propietarios, inquilinos, reservas y liquidaciones[cite: 3]. [cite_start]Permite a una inmobiliaria administrar propiedades de distintos propietarios que se alquilan por períodos cortos[cite: 5]. [cite_start]El sistema está diseñado para manejar condiciones particulares por propiedad (precio por noche, depósito, política de cancelación) y distintos esquemas de comisión pactados con la inmobiliaria[cite: 6]. 
+Sistema para administrar propiedades en alquiler temporario, gestionando propietarios, inquilinos, reservas, cobros y liquidaciones mensuales.
 
-Desarrollado como trabajo integrador para la materia Programación Orientada a Objetos II.
+Desarrollado como trabajo integrador de la materia **Programación Orientada a Objetos II**.
 
-## Características Principales
+---
 
-* [cite_start]**Gestión de Propiedades y Propietarios:** Alta y modificación de propiedades con sus condiciones, y asociación al propietario con su esquema de comisión (porcentaje fijo, escalonado por monto, etc.)[cite: 9].
-* [cite_start]**Gestión de Reservas:** Registro de reservas con validación de disponibilidad, aplicación de tarifas y cálculo de depósito[cite: 10]. [cite_start]Las reservas pueden solaparse con excepciones (mantenimiento, uso personal del propietario)[cite: 7].
-* [cite_start]**Cancelaciones y Penalidades:** Anulación de reservas aplicando la política correspondiente según la anticipación con que se cancela (sin cargo, cargo parcial o total)[cite: 11].
-* [cite_start]**Registro de Cobros e Imputación:** Registro de pagos de reservas con soporte para señas, pagos parciales y saldo al ingreso[cite: 13].
-* [cite_start]**Liquidaciones Mensuales:** Generación de liquidaciones mensuales descontando comisiones, gastos de mantenimiento y penalidades aplicables[cite: 12].
-* [cite_start]**Reportes e Historial:** Consulta del historial de ocupación por propiedad, ingresos por propietario y rentabilidad por período[cite: 14].
+##  Descripción
 
-## Estructura de Documentación (`/docs`)
+El sistema permite a una inmobiliaria administrar propiedades de distintos propietarios que se alquilan por períodos cortos.
 
-El ciclo de vida del proyecto se divide en 2 iteraciones a lo largo de 4 semanas, y toda la planificación se encuentra en la carpeta `docs/`.
+Cada propiedad posee condiciones particulares como:
 
-* [cite_start]`docs/erp.md`: Un documento de especificación de requisitos de software para el proyecto[cite: 15].
-* [cite_start]`docs/roadmap.md`: Un plan tentativo de las historias de usuario que se entregarán en cada iteración[cite: 16].
-* [cite_start]`docs/dp-iteracion-X.md`: Documento de diseño y planificación para la iteración X[cite: 17]. [cite_start]Incluye el trabajo en equipo, diagrama de clases UML, wireframes, casos de uso, backlog y tareas[cite: 17, 18, 19].
-* [cite_start]`docs/retrospectiva-iteracion-X.md`: Documento de retrospectiva que debe completarse tan pronto como se complete la iteración para reflexionar sobre lo cumplido y los retos[cite: 20, 23].
+- precio por noche
+- depósito de garantía
+- política de cancelación
+- esquema de comisión del propietario
 
-##  Instrucciones de Ejecución
+El sistema contempla reglas de negocio reales como disponibilidad, penalidades por cancelación y liquidaciones con deducciones.
 
-## ARREGLAR ESTOO
-### Requisitos previos
-* [Lenguaje de programación y versión, ej: Java 17 / Python 3.10 / C# .NET 8]
-* [Herramienta de construcción o base de datos si aplica, ej: Maven, Gradle, SQLite]
+---
 
-### Instalación y uso
-1. **Clonar el repositorio:**
-   ```bash
-   git clone [https://github.com/tu-usuario/nombre-del-repo.git](https://github.com/tu-usuario/nombre-del-repo.git)
-   cd nombre-del-repo
+##  Funcionalidades Principales
+
+###  Gestión de Propiedades y Propietarios
+- Alta y modificación de propiedades
+- Asociación de propiedades a propietarios
+- Configuración de esquemas de comisión (fijo o escalonado)
+
+###  Gestión de Reservas
+- Registro de reservas con validación de disponibilidad
+- Control de solapamientos con excepciones
+- Cálculo automático de tarifas y depósito
+
+###  Cancelaciones y Penalidades
+- Cancelación de reservas según política configurada
+- Aplicación automática de cargos según anticipación
+
+###  Registro de Cobros
+- Registro de señas y pagos parciales
+- Control de saldo pendiente al ingreso
+
+###  Liquidaciones a Propietarios
+- Liquidación mensual por período
+- Descuento de comisiones y gastos
+- Aplicación de penalidades
+
+###  Reportes e Historial
+- Historial de ocupación por propiedad
+- Ingresos por propietario
+- Rentabilidad por período
+
+---
+
+##  Documentación del Proyecto
+
+Toda la documentación se encuentra en la carpeta `/docs`.
+
+El proyecto se desarrolla en **2 iteraciones dentro de 4 semanas**.
+
+| Archivo | Descripción |
+|--------|------------|
+| docs/erp.md | Especificación de requisitos del sistema |
+| docs/roadmap.md | Plan de iteraciones y roadmap del proyecto |
+| docs/dp-iteracion-X.md | Diseño, UML, backlog y tareas de la iteración |
+| docs/retrospectiva-iteracion-X.md | Análisis y reflexión al finalizar cada iteración |
+
+---
+
+##  Estado del Proyecto
+
+- Iteración 1 → Sistema funcional al 50%
+- Iteración 2 → Sistema completo + refactorización
+
+---
+
+##  Requisitos del Sistema
+
+Completar según la tecnología utilizada.
+
+Ejemplo:
+
+- Java 17
+- Maven o Gradle
+- Base de datos (SQLite / PostgreSQL / otra)
+- IDE recomendado (IntelliJ / VS Code / otro)
+
+---
+
+##  Cómo ejecutar el proyecto
+
+(Completar cuando el sistema sea ejecutable)
+
+Ejemplo:
+
+```bash
+git clone <(https://github.com/BauerLuciano/Integrador-de-POO-II-Bauer-Olivieri.git)>
+cd proyecto
+comando-para-ejecutar (ver despues que ponemos)
