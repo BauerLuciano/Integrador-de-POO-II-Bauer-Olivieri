@@ -19,7 +19,7 @@ A continuación se detalla el trabajo planificado y asignado a cada integrante p
 
 El siguiente diagrama de clases UML refleja el modelo de dominio diseñado exclusivamente para esta iteración:
 
-![Diagrama de Clases Iteración 1](../)
+![Diagrama de Clases Iteración 1](../../DiagramadeClase-1eriteracion.jpg)
 
 ---
 
