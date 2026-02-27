@@ -1,4 +1,4 @@
-package com.inmobiliaria.propietarios.model;
+package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

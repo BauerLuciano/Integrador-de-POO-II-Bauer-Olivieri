@@ -1,7 +1,7 @@
-package com.inmobiliaria.propietarios.service;
+package com.inmobiliaria.alquileres_temporarios.propietarios.service;
 
-import com.inmobiliaria.propietarios.model.Propietario;
-import com.inmobiliaria.propietarios.repository.PropietarioRepository;
+import com.inmobiliaria.alquileres_temporarios.propietarios.model.Propietario;
+import com.inmobiliaria.alquileres_temporarios.propietarios.repository.PropietarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

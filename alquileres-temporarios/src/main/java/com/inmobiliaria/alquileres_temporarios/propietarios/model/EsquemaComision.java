@@ -1,9 +1,17 @@
-package com.inmobiliaria.propietarios.model;
+package com.inmobiliaria.alquileres_temporarios.propietarios.model;
+
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jakarta.persistence.*;
-import java.math.BigDecimal;
+
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -11,7 +19,7 @@ import java.math.BigDecimal;
 // Magia de Jackson para que el JSON se convierta en la clase correcta
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo_esquema")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = ComissionFija.class, name = "FIJA"),
+    @JsonSubTypes.Type(value = ComisionFija.class, name = "FIJA"),
     @JsonSubTypes.Type(value = ComisionEscalonada.class, name = "ESCALONADA")
 })
 public abstract class EsquemaComision {

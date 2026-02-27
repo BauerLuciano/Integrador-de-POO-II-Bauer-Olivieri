@@ -1,6 +1,12 @@
-package com.inmobiliaria.propietarios.model;
+package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import java.math.BigDecimal;
 
 @Entity
@@ -22,7 +28,6 @@ public class Propietario {
 
     public Propietario() {}
 
-    // Delegación (Strategy en acción)
     public BigDecimal calcularComision(BigDecimal montoReserva) {
         if (esquemaComision == null) {
             throw new IllegalStateException("El propietario no tiene esquema de comisión.");
