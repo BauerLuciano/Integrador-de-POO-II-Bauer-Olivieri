@@ -1,5 +1,6 @@
 package com.inmobiliaria.alquileres_temporarios.propiedades.controller;
 
+import com.inmobiliaria.alquileres_temporarios.propiedades.model.ExcepcionCalendario;
 import com.inmobiliaria.alquileres_temporarios.propiedades.model.Propiedad;
 import com.inmobiliaria.alquileres_temporarios.propiedades.repository.PropiedadRepository;
 import com.inmobiliaria.alquileres_temporarios.propiedades.service.PropiedadService;
@@ -37,5 +38,14 @@ public class PropiedadController {
                              @RequestParam LocalDate inicio, 
                              @RequestParam LocalDate fin) {
         return service.verificarDisponibilidad(id, inicio, fin);
+    }
+
+    @PostMapping("/{id}/bloqueos")
+    public ExcepcionCalendario bloquear(@PathVariable Long id, 
+                                    @RequestBody ExcepcionCalendario excepcion) {
+        return service.bloquearFechas(id, 
+                                  excepcion.getFechaInicio(), 
+                                  excepcion.getFechaFin(), 
+                                  excepcion.getMotivo());
     }
 }
