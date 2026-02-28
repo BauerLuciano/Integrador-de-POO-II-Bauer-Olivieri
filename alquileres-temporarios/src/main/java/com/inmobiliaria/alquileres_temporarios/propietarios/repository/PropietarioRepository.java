@@ -7,5 +7,8 @@ import com.inmobiliaria.alquileres_temporarios.propietarios.model.Propietario;
 
 @Repository
 public interface PropietarioRepository extends JpaRepository<Propietario, Long> {
+    
     boolean existsByDni(String dni);
+
+    boolean existsByDniAndIdNot(String dni, Long id);
 }

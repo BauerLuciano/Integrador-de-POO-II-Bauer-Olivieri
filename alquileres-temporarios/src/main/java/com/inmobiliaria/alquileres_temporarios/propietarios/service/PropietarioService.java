@@ -18,8 +18,15 @@ public class PropietarioService {
 
     @Transactional
     public Propietario guardarPropietario(Propietario propietario) {
-        if (propietario.getId() == null && repository.existsByDni(propietario.getDni())) {
-            throw new IllegalArgumentException("Ya existe un propietario con el DNI: " + propietario.getDni());
+        if (propietario.getId() == null) {
+            if (repository.existsByDni(propietario.getDni())) {
+                throw new IllegalArgumentException("Ya existe un propietario con el DNI: " + propietario.getDni());
+            }
+        } 
+        else {
+            if (repository.existsByDniAndIdNot(propietario.getDni(), propietario.getId())) {
+                throw new IllegalArgumentException("El DNI " + propietario.getDni() + " ya está registrado en otro propietario distinto.");
+            }
         }
         return repository.save(propietario);
     }
