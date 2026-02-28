@@ -5,6 +5,8 @@ import com.inmobiliaria.alquileres_temporarios.propiedades.repository.PropiedadR
 import com.inmobiliaria.alquileres_temporarios.propiedades.service.PropiedadService;
 import com.inmobiliaria.alquileres_temporarios.reservas.model.Reserva;
 import com.inmobiliaria.alquileres_temporarios.reservas.repository.ReservaRepository;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class ReservaService {
     private final PropiedadRepository propiedadRepo;
     private final PropiedadService propiedadService; 
 
+	@Transactional
     public Reserva crearReserva(Reserva reserva) {
         // 1. Validar que las fechas tengan sentido
         if (reserva.getFechaInicio().isAfter(reserva.getFechaFin()) || reserva.getFechaInicio().isEqual(reserva.getFechaFin())) {
