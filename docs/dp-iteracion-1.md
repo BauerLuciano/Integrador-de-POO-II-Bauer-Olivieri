@@ -26,7 +26,7 @@ El siguiente diagrama de clases UML refleja el modelo de dominio diseñado exclu
 ## Wireframe y caso de uso
 
 *(Nota para el equipo: Insertar aquí las imágenes de los bocetos de la interfaz)*
-`![Wireframe Dashboard](../ruta-a-tu-wireframe.png)`
+`![Wireframe Dashboard](../Wireframe-POO2.png)`
 
 ---
 
