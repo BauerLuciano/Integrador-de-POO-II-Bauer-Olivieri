@@ -35,7 +35,7 @@ El siguiente diagrama de clases UML refleja las nuevas entidades (Pagos, Gastos,
 
 ![Diagrama de Clases Iteración 2](../Diagramadeclase-2daiteracion.jpg)
 
-
+#### `En color rojo son las nuevas clases e interfaces`
 ---
 
 
