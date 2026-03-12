@@ -46,8 +46,7 @@ El siguiente diagrama de clases UML refleja las nuevas entidades (Pagos, Gastos,
 
 La siguiente imagen refleja cómo se vería la pantalla del módulo de Liquidaciones y Reportes:
 
-!\[Wireframe Finanzas](../Wireframe2-POO2.png)
-
+![Wireframe Finanzas](../Wireframe2-POO2.png)
 
 
 ---
