@@ -15,4 +15,12 @@ export class ReservaService {
   crearReserva(reserva: Reserva): Observable<Reserva> {
     return this.http.post<Reserva>(this.apiUrl, reserva);
   }
+
+  cancelarReserva(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/cancelar`, {}); 
+  }
+
+  getReservaById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
 }

@@ -55,12 +55,14 @@
                 <td class="fw-bold text-success">
                   {{ res.montoTotal | currency:'USD':'symbol':'1.0-0' }}
                 </td>
-                <td class="text-center pe-4">
-                  <div class="btn-group">
-                    <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-eye"></i></button>
-                    <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
-                  </div>
-                </td>
+                <td class="text-center">
+                <button class="btn btn-outline-primary btn-sm me-2" [routerLink]="['/reservas/detalle', res.id]" title="Ver todos los datos">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-sm" (click)="cancelarReserva(res)" title="Cancelar Reserva" [disabled]="res.estado === 'CANCELADA'">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+              </td>
               </tr>
             } @empty {
               @if (!loading) {

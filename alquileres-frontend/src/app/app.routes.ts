@@ -8,6 +8,7 @@ import { ReservasComponent } from './components/reservas/reservas';
 import { ReportesComponent } from './components/reportes/reportes';
 import { ReservaFormComponent } from './components/reserva-form/reserva-form';
 import { PropiedadDetalleComponent } from './components/propiedades/propiedad-detalle/propiedad-detalle';
+import { ReservaDetalleComponent } from './components/reservas/reserva-detalle/reserva-detalle';
 
 
 
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'propietarios', component: PropietariosComponent },
   { path: 'propietarios/nuevo', component: PropietarioFormComponent },
   { path: 'reservas', component: ReservasComponent },
+  { path: 'reservas/detalle/:id', component: ReservaDetalleComponent },
   { path: 'reservas/nueva', component: ReservaFormComponent },
   { path: 'reportes', component: ReportesComponent },
   { path: 'propiedades/editar/:id', component: PropiedadFormComponent },

@@ -34,4 +34,20 @@ export class ReservasComponent implements OnInit {
       }
     });
   }
+
+  cancelarReserva(reserva: any) {
+    if (confirm(`¿Estás seguro de que querés cancelar la reserva de ${reserva.inquilino}?`)) {
+      
+      this.reservaService.cancelarReserva(reserva.id).subscribe({
+        next: () => {
+          reserva.estado = 'CANCELADA';
+          alert('¡Reserva dada de baja exitosamente!');
+        },
+        error: (err) => {
+          console.error('Error al cancelar:', err);
+          alert('Hubo un error. No se pudo cancelar la reserva.');
+        }
+      });
+    }
+  }
 }
