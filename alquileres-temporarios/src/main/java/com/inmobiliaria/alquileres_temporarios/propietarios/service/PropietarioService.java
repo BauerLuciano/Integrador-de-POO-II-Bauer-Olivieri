@@ -41,9 +41,17 @@ public class PropietarioService {
 
     @Transactional
     public void eliminarPropietario(Long id) {
-        if (!repository.existsById(id)) {
-            throw new IllegalArgumentException("El propietario con ID " + id + " no existe.");
-        }
-        repository.deleteById(id);
+        Propietario propietario = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("El propietario con ID " + id + " no existe."));       
+        propietario.setActivo(false);
+        repository.save(propietario);
+    }
+
+    @Transactional
+    public void reactivarPropietario(Long id) {
+        Propietario propietario = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("El propietario con ID " + id + " no existe."));       
+        propietario.setActivo(true); 
+        repository.save(propietario);
     }
 }

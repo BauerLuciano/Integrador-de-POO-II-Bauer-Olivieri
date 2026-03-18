@@ -1,15 +1,20 @@
 package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Propietario {
 
     @Id
@@ -21,12 +26,13 @@ public class Propietario {
     private String apellido;
     private String email;
     private String telefono;
+    
+    @Column(name = "activo")
+    private Boolean activo = true;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "esquema_comision_id")
     private EsquemaComision esquemaComision;
-
-    public Propietario() {}
 
     public BigDecimal calcularComision(BigDecimal montoReserva) {
         if (esquemaComision == null) {
@@ -34,20 +40,4 @@ public class Propietario {
         }
         return esquemaComision.calcularComision(montoReserva);
     }
-
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getDni() { return dni; }
-    public void setDni(String dni) { this.dni = dni; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-    public EsquemaComision getEsquemaComision() { return esquemaComision; }
-    public void setEsquemaComision(EsquemaComision esquemaComision) { this.esquemaComision = esquemaComision; }
 }

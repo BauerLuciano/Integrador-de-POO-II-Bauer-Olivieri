@@ -63,4 +63,14 @@ public class PropietarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{id}/reactivar")
+    public ResponseEntity<Void> reactivarPropietario(@PathVariable Long id) {
+        try {
+            service.reactivarPropietario(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
