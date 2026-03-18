@@ -15,4 +15,12 @@ export class ReservaService {
   crearReserva(reserva: Reserva): Observable<Reserva> {
     return this.http.post<Reserva>(this.apiUrl, reserva);
   }
+
+  getHistorialPropiedad(propiedadId: number): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/historial/propiedad/${propiedadId}`);
+  }
+
+  getIngresosPropietario(propietarioId: number, inicio: string, fin: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/ingresos/propietario/${propietarioId}?inicio=${inicio}&fin=${fin}`);
+  }
 }

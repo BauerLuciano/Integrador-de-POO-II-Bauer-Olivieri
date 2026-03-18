@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ReporteLiquidacion } from '../../models/reporte-liquidacion';
 import { PropietarioService } from '../../services/propietario';
 import { ReporteService } from '../../services/reporte';
+import { ReservaService } from '../../services/reserva'; 
 import { Propietario } from '../../models/propietario';
-
 
 @Component({
   selector: 'app-reportes',
@@ -17,25 +17,46 @@ export class ReportesComponent implements OnInit {
   propietarios: Propietario[] = [];
   idPropietarioSel: number = 0;
   
-  // Inicializamos con el mes actual en formato "YYYY-MM" (ej: "2026-03")
   periodoSeleccionado: string = new Date().toISOString().slice(0, 7);
-
   datos: ReporteLiquidacion | null = null;
+
+  mostrarEstadisticas: boolean = false;
+  fechaInicioEstadistica: string = '';
+  fechaFinEstadistica: string = '';
+  datosEstadistica: any = null;
 
   private propietarioService = inject(PropietarioService);
   private reporteService = inject(ReporteService);
+  private reservaService = inject(ReservaService); 
 
   ngOnInit() {
     this.propietarioService.getPropietarios().subscribe(res => this.propietarios = res);
   }
 
   consultar() {
+    this.mostrarEstadisticas = false; 
     if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario");
 
-    // "periodoSeleccionado" viene como "2026-03". Lo partimos:
     const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
 
     this.reporteService.getLiquidacion(this.idPropietarioSel, mes, anio)
       .subscribe(res => this.datos = res);
+  }
+
+  descargarPDF() {
+    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario primero");
+    const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
+    this.reporteService.exportarPDF(this.idPropietarioSel, mes, anio);
+  }
+
+  consultarEstadisticas() {
+    this.datos = null; 
+    this.mostrarEstadisticas = true;
+    
+    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario");
+    if (!this.fechaInicioEstadistica || !this.fechaFinEstadistica) return alert("Seleccioná un rango de fechas");
+
+    this.reservaService.getIngresosPropietario(this.idPropietarioSel, this.fechaInicioEstadistica, this.fechaFinEstadistica)
+      .subscribe(res => this.datosEstadistica = res);
   }
 }

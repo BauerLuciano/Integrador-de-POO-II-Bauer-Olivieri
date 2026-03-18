@@ -1,10 +1,10 @@
 <div class="container-fluid pt-2 pb-5">
-  <h2 class="fw-bold mb-4 text-dark text-uppercase"><i class="bi bi-file-earmark-bar-graph me-2"></i>Liquidación Mensual de Propietario</h2>
+  <h2 class="fw-bold mb-4 text-dark text-uppercase"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reportes y Estadísticas</h2>
 
   <div class="card shadow-sm border-0 mb-4 bg-light border-start border-primary border-4">
     <div class="card-body">
       <div class="row align-items-end g-3">
-        <div class="col-md-5">
+        <div class="col-md-3">
           <label class="small fw-bold text-muted">PROPIETARIO:</label>
           <select class="form-select" [(ngModel)]="idPropietarioSel">
             <option [value]="0" disabled>Seleccione un dueño...</option>
@@ -13,22 +13,60 @@
             }
           </select>
         </div>
-        <div class="col-md-4">
-          <label class="small fw-bold text-muted">PERÍODO A LIQUIDAR:</label>
+        
+        <div class="col-md-2 border-start">
+          <label class="small fw-bold text-muted">MES (Liquidación):</label>
           <input type="month" class="form-control" [(ngModel)]="periodoSeleccionado">
         </div>
-        <div class="col-md-3">
-          <button class="btn btn-dark w-100 shadow-sm fw-bold" (click)="consultar()">
-            <i class="bi bi-search me-2"></i> GENERAR REPORTE
+        <div class="col-md-2">
+          <button class="btn btn-outline-dark w-100 shadow-sm fw-bold" (click)="consultar()">
+            <i class="bi bi-receipt me-2"></i> LIQUIDAR
           </button>
         </div>
+
+        <div class="col-md-2 border-start">
+          <label class="small fw-bold text-muted">DESDE:</label>
+          <input type="date" class="form-control" [(ngModel)]="fechaInicioEstadistica">
+        </div>
+        <div class="col-md-2">
+          <label class="small fw-bold text-muted">HASTA:</label>
+          <input type="date" class="form-control" [(ngModel)]="fechaFinEstadistica">
+        </div>
+        <div class="col-md-1">
+          <button class="btn btn-dark w-100 shadow-sm fw-bold" (click)="consultarEstadisticas()" title="Ver Estadísticas">
+            <i class="bi bi-bar-chart-fill"></i>
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
 
   <hr class="my-4">
 
-  @if (datos) {
+  @if (mostrarEstadisticas && datosEstadistica) {
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm text-center">
+          <div class="card-header bg-secondary text-white fw-bold py-2">Total Reservas Concretadas</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+             <h2 class="fw-bold mb-0 display-4 text-primary">{{ datosEstadistica.cantidadReservas }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm text-center bg-success text-white border-3">
+          <div class="card-header bg-success fw-bold py-2 border-0">INGRESOS GENERADOS</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <h2 class="fw-bold mb-0 display-4">{{ datosEstadistica.ingresosTotales | currency:'USD':'symbol':'1.0-0' }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (datos && !mostrarEstadisticas) {
     <div class="row g-3 mb-4">
       <div class="col-md-3">
         <div class="card h-100 border-0 shadow-sm text-center">
@@ -102,17 +140,20 @@
     </div>
 
     <div class="d-flex justify-content-end gap-3">
-      <button class="btn btn-outline-dark"><i class="bi bi-file-pdf me-2"></i>Exportar a PDF</button>
+      <button class="btn btn-outline-dark" (click)="descargarPDF()">
+        <i class="bi bi-file-pdf me-2"></i>Exportar a PDF
+      </button>
       <button class="btn btn-primary px-4 shadow">Liquidar y marcar como pagado</button>
     </div>
+  }
 
-  } @else {
+  @if (!datos && !mostrarEstadisticas) {
     <div class="text-center py-5">
       <div class="display-1 text-muted opacity-25 mb-3">
         <i class="bi bi-clipboard-data"></i>
       </div>
-      <h4 class="text-muted">No hay liquidación generada</h4>
-      <p class="text-secondary">Seleccioná un propietario y el mes para ver el detalle de la liquidación.</p>
+      <h4 class="text-muted">No hay datos para mostrar</h4>
+      <p class="text-secondary">Seleccioná un propietario y generá un reporte o estadística.</p>
     </div>
   }
 </div>
