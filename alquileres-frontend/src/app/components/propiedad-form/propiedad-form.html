@@ -1,19 +1,20 @@
-<div class="container mt-4">
-  <div class="card shadow">
-    <div class="card-header bg-dark text-white">
-      <h4 class="mb-0">{{ propiedadId ? 'Editar Propiedad' : 'Nueva Propiedad' }}</h4>
+<div class="container mt-4 pb-5">
+  <div class="card shadow border-0 mb-4">
+    <div class="card-header bg-dark text-white p-3">
+      <h5 class="mb-0"><i class="bi bi-house me-2"></i>{{ propiedadId ? 'Editar Propiedad' : 'Nueva Propiedad' }}</h5>
     </div>
-    <div class="card-body">
+    
+    <div class="card-body p-4">
       <form [formGroup]="form" (ngSubmit)="guardar()">
         <div class="row">
           
           <div class="col-md-6 mb-3">
-            <label class="form-label">Dirección</label>
+            <label class="form-label small fw-bold">Dirección</label>
             <input type="text" formControlName="direccion" class="form-control">
           </div>
           
           <div class="col-md-6 mb-3">
-            <label class="form-label">Propietario</label>
+            <label class="form-label small fw-bold">Propietario</label>
             <select formControlName="propietario" class="form-select" [compareWith]="compararPropietarios">
               <option [ngValue]="null">Seleccione un dueño...</option>
               @for (p of propietarios; track p.id) {
@@ -23,23 +24,25 @@
           </div>
           
           <div class="col-md-4 mb-3">
-            <label class="form-label">Precio por Noche</label>
-            <input type="number" formControlName="precioPorNoche" class="form-control">
+            <label class="form-label small fw-bold">Precio por Noche</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" formControlName="precioPorNoche" class="form-control">
+            </div>
           </div>
           
           <div class="col-md-4 mb-3">
-            <label class="form-label">Depósito (%)</label>
+            <label class="form-label small fw-bold">Depósito (%)</label>
             <input type="number" formControlName="porcentajeDeposito" class="form-control">
           </div>
 
-          <div class="col-12 mt-3 mb-2">
-            <h5 class="text-muted border-bottom pb-2">Configuración de Cancelación</h5>
+          <div class="col-12 mt-4 mb-3">
+            <h6 class="text-muted border-bottom pb-2"><i class="bi bi-shield-check me-2"></i>Política de Cancelación</h6>
           </div>
 
-          <div formGroupName="politicaCancelacion" class="row">
-            
+          <div formGroupName="politicaCancelacion" class="row bg-light p-3 rounded border mx-0 mb-4">
             <div class="col-md-4 mb-3">
-              <label class="form-label">Tipo de Política</label>
+              <label class="form-label small fw-bold">Tipo de Política</label>
               <select formControlName="tipo" class="form-select">
                 <option value="FLEXIBLE">Flexible</option>
                 <option value="ESTRICTA">Estricta</option>
@@ -48,32 +51,104 @@
 
             @if (form.get('politicaCancelacion.tipo')?.value === 'FLEXIBLE') {
               <div class="col-md-4 mb-3">
-                <label class="form-label">Días de Anticipación (Sin cargo)</label>
+                <label class="form-label small fw-bold text-muted">Días Ant. Sin Cargo</label>
                 <input type="number" formControlName="diasAnticipacionSinCargo" class="form-control">
               </div>
               <div class="col-md-4 mb-3">
-                <label class="form-label">Penalidad Tardía (%)</label>
+                <label class="form-label small fw-bold text-muted">Penalidad Tardía (%)</label>
                 <input type="number" formControlName="porcentajePenalidadTardia" class="form-control">
               </div>
             }
 
             @if (form.get('politicaCancelacion.tipo')?.value === 'ESTRICTA') {
               <div class="col-md-4 mb-3">
-                <label class="form-label">Porcentaje de Retención (%)</label>
+                <label class="form-label small fw-bold text-muted">Porc. Retención (%)</label>
                 <input type="number" formControlName="porcentajeRetencion" class="form-control">
               </div>
             }
           </div>
-          </div>
-        
-        <div class="text-end mt-3">
-          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Volver Atrás</button>
           
-          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        </div>
+        
+        <div class="text-end mt-2">
+          <button type="button" class="btn btn-light border me-2" (click)="cancelar()">
+            <i class="bi bi-arrow-left me-1"></i> Volver
+          </button>
+          
+          <button type="submit" class="btn btn-primary shadow-sm" [disabled]="form.invalid">
             <i class="bi bi-save me-1"></i> {{ propiedadId ? 'Guardar Cambios' : 'Crear Propiedad' }}
           </button>
         </div>
       </form>
     </div>
   </div>
+
+  @if (propiedadId) {
+    <div class="card shadow-sm border-0 border-top border-warning border-4">
+      <div class="card-header bg-white p-3">
+        <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-tools text-warning me-2"></i>Historial de Mantenimiento</h5>
+      </div>
+      
+      <div class="card-body p-4">
+        
+        <form [formGroup]="gastoForm" (ngSubmit)="guardarGasto()" class="row g-2 align-items-end mb-4 bg-light p-3 rounded border mx-0">
+          <div class="col-md-5">
+            <label class="form-label small fw-bold text-muted">Concepto (Ej: Plomero)</label>
+            <input type="text" formControlName="concepto" class="form-control form-control-sm" placeholder="Detalle del arreglo...">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">Monto</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">$</span>
+              <input type="number" formControlName="monto" class="form-control">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">Fecha</label>
+            <input type="date" formControlName="fecha" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-1 text-end">
+            <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold shadow-sm" [disabled]="gastoForm.invalid" title="Agregar Gasto">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small fw-bold">
+              <tr>
+                <th>FECHA</th>
+                <th>CONCEPTO</th>
+                <th>MONTO</th>
+                <th class="text-center">QUITAR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (gasto of gastos; track gasto.id) {
+                <tr>
+                  <td>{{ gasto.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td class="fw-medium">{{ gasto.concepto }}</td>
+                  <td class="fw-bold text-danger">- {{ gasto.monto | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm" (click)="eliminarGasto(gasto.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted small">
+                    <i class="bi bi-check-circle fs-4 d-block mb-1 text-success opacity-50"></i>
+                    No hay gastos de mantenimiento registrados para esta propiedad.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  }
 </div>

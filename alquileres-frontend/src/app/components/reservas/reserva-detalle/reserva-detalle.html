@@ -1,0 +1,81 @@
+<div class="container mt-4 pb-5">
+  
+  @if (loading) {
+    <div class="text-center mt-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  }
+
+  @if (!loading && reserva) {
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0">
+          
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-3">
+            <h5 class="mb-0"><i class="bi bi-receipt me-2"></i> Detalle de Reserva #{{ reserva.id }}</h5>
+            <span class="badge bg-success border border-light">Confirmada</span>
+          </div>
+          
+          <div class="card-body p-4">
+            
+            <div class="row mb-4">
+              <div class="col-sm-6">
+                <h6 class="text-muted mb-1 small fw-bold">INQUILINO</h6>
+                <p class="fw-bold fs-5 text-dark"><i class="bi bi-person me-1"></i> {{ reserva.inquilino }}</p>
+              </div>
+              <div class="col-sm-6 text-sm-end">
+                <h6 class="text-muted mb-1 small fw-bold">PROPIEDAD</h6>
+                <p class="fw-bold text-dark"><i class="bi bi-house me-1"></i> {{ reserva.propiedad?.direccion }}</p>
+                <p class="small text-muted" style="margin-top: -10px;">
+                  Dueño: {{ reserva.propiedad?.propietario?.nombre }} {{ reserva.propiedad?.propietario?.apellido }}
+                </p>
+              </div>
+            </div>
+
+            <div class="row bg-light p-3 rounded mb-4 text-center border mx-0">
+              <div class="col-6 border-end">
+                <h6 class="text-muted small mb-1 fw-bold">CHECK-IN</h6>
+                <p class="fw-bold mb-0 text-primary fs-5">{{ reserva.fechaInicio | date:'dd/MM/yyyy' }}</p>
+              </div>
+              <div class="col-6">
+                <h6 class="text-muted small mb-1 fw-bold">CHECK-OUT</h6>
+                <p class="fw-bold mb-0 text-primary fs-5">{{ reserva.fechaFin | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+
+            <h6 class="border-bottom pb-2 mb-3 fw-bold text-muted"><i class="bi bi-cash-stack me-2"></i>Desglose Financiero</h6>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">Depósito en Garantía (Retenido):</span>
+              <span class="fw-medium">{{ reserva.depositoRetenido | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between text-success mb-3">
+              <span class="fw-medium">Comisión Inmobiliaria:</span>
+              <span class="fw-bold">+ {{ reserva.comisionInmobiliaria | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between p-2 bg-light rounded border">
+              <span class="fw-bold text-dark fs-5">Total Estancia:</span>
+              <span class="fw-bold text-dark fs-5">{{ reserva.montoTotal | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <hr class="my-4">
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-outline-secondary btn-sm px-3" routerLink="/reservas">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+              </button>
+              <button class="btn btn-primary btn-sm px-4 shadow-sm" (click)="imprimirTicket()">
+                <i class="bi bi-printer me-1"></i> Imprimir Comprobante
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
