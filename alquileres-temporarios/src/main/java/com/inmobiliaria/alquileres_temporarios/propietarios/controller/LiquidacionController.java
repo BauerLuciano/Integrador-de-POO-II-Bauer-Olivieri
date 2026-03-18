@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/liquidaciones")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class LiquidacionController {
 
     private final LiquidacionService service;

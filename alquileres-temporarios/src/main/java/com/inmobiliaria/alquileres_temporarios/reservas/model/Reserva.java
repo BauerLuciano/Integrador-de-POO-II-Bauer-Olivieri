@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.inmobiliaria.alquileres_temporarios.propiedades.model.BloqueoCalendario;
 import com.inmobiliaria.alquileres_temporarios.propiedades.model.Propiedad;
 
@@ -39,8 +41,8 @@ public class Reserva implements BloqueoCalendario {
     private BigDecimal montoTotal = BigDecimal.ZERO;
     private BigDecimal depositoRetenido = BigDecimal.ZERO;
     private BigDecimal comisionInmobiliaria = BigDecimal.ZERO;
-    
-    // --- NUEVO CAMPO PARA PENALIDAD (HU-10) ---
+    private String inquilino;
+  
     private BigDecimal montoPenalidad = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
@@ -49,8 +51,10 @@ public class Reserva implements BloqueoCalendario {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "propiedad_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Propiedad propiedad;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pago> pagos = new ArrayList<>();
 

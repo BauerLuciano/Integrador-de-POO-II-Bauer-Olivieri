@@ -4,6 +4,8 @@ import com.inmobiliaria.alquileres_temporarios.propiedades.model.ExcepcionCalend
 import com.inmobiliaria.alquileres_temporarios.propiedades.model.Propiedad;
 import com.inmobiliaria.alquileres_temporarios.propiedades.service.PropiedadService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/propiedades")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class PropiedadController {
 
     private final PropiedadService service;
@@ -41,5 +44,21 @@ public class PropiedadController {
                                       excepcion.getFechaInicio(), 
                                       excepcion.getFechaFin(), 
                                       excepcion.getMotivo());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarPropiedad(@PathVariable Long id) {
+        service.eliminar(id);
+        return ResponseEntity.noContent().build(); 
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Propiedad> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Propiedad> actualizarPropiedad(@PathVariable Long id, @RequestBody Propiedad propiedad) {
+        return ResponseEntity.ok(service.actualizar(id, propiedad));
     }
 }

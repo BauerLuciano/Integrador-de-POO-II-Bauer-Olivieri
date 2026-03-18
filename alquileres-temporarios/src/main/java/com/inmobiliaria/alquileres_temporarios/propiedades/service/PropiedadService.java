@@ -47,4 +47,36 @@ public class PropiedadService {
     public List<Propiedad> obtenerTodas() {
         return propiedadRepo.findAll();
     }
+
+    public void eliminar(Long id) {
+        // 1. Verificamos si la propiedad realmente existe en la base de datos
+        if (!propiedadRepo.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar: La propiedad con ID " + id + " no existe.");
+        }
+        // 2. Si existe, procedemos a eliminarla
+        propiedadRepo.deleteById(id);
+    }
+
+    // BUSCAR POR ID 
+    public Propiedad buscarPorId(Long id) {
+        return propiedadRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró la propiedad con ID: " + id));
+    }
+
+    // ACTUALIZAR 
+    public Propiedad actualizar(Long id, Propiedad datosNuevos) {
+        Propiedad propiedadExistente = buscarPorId(id);
+        
+        // Pisamos los datos viejos con los nuevos que vienen de Angular
+        propiedadExistente.setDireccion(datosNuevos.getDireccion());
+        propiedadExistente.setPrecioPorNoche(datosNuevos.getPrecioPorNoche());
+        propiedadExistente.setPorcentajeDeposito(datosNuevos.getPorcentajeDeposito());
+        propiedadExistente.setPoliticaCancelacion(datosNuevos.getPoliticaCancelacion());
+        propiedadExistente.setPropietario(datosNuevos.getPropietario());
+        
+        if (datosNuevos.getEstado() != null) {
+            propiedadExistente.setEstado(datosNuevos.getEstado());
+        }
+        return guardarPropiedad(propiedadExistente);
+    }
 }

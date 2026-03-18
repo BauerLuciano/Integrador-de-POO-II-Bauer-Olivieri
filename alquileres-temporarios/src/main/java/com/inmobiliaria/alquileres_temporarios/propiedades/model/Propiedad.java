@@ -34,18 +34,17 @@ public class Propiedad {
     private Double precioPorNoche;
     private Double porcentajeDeposito;
     
-    public enum TipoPolitica {
-        ESTRICTA, FLEXIBLE
-    }
-
-    // Corregimos el nombre para que coincida con tu columna de la DB
-    @Enumerated(EnumType.STRING)
-    @Column(name = "politica_cancelacion", nullable = false) 
-    private TipoPolitica tipoPolitica = TipoPolitica.FLEXIBLE;
 
     @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "propietario_id")
     private Propietario propietario;
+
+    @Column(name = "estado")
+    private String estado = "Disponible";
+
+    @ManyToOne(cascade = jakarta.persistence.CascadeType.ALL)
+    @JoinColumn(name = "politica_cancelacion_id")
+    private PoliticaCancelacion politicaCancelacion;
 
     @Transient 
     private List<BloqueoCalendario> bloqueos = new ArrayList<>();
@@ -54,10 +53,4 @@ public class Propiedad {
         return bloqueos.stream().noneMatch(b -> b.seSolapaCon(inicio, fin));
     }
 
-    public PoliticaCancelacion obtenerEstrategiaCancelacion() {
-        if (this.tipoPolitica != null && this.tipoPolitica == TipoPolitica.ESTRICTA) {
-            return new PoliticaEstricta();
-        }
-        return new PoliticaFlexible();
-    }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/gastos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class GastoController {
 
     private final GastoService service;

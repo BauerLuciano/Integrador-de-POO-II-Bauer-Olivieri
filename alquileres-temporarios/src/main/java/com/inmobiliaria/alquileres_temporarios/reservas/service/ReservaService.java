@@ -50,6 +50,8 @@ public class ReservaService {
         }
 
         reserva.calcularCostos();
+        propiedad.setEstado("Alquilada");
+        propiedadRepo.save(propiedad);
 
         return reservaRepo.save(reserva);
     }
@@ -81,7 +83,7 @@ public class ReservaService {
         }
 
         // 1. Obtener la estrategia de cancelación de la propiedad
-        PoliticaCancelacion politica = reserva.getPropiedad().obtenerEstrategiaCancelacion();
+        PoliticaCancelacion politica = reserva.getPropiedad().getPoliticaCancelacion();
         
         // 2. Calcular la penalidad usando el Strategy (pasando la fecha de hoy)
         BigDecimal penalidad = politica.calcularPenalidad(reserva, LocalDate.now());
@@ -91,5 +93,9 @@ public class ReservaService {
         reserva.setEstado(EstadoReserva.CANCELADA);
         
         return reservaRepo.save(reserva);
+    }
+
+    public List<Reserva> obtenerTodas() {
+        return reservaRepo.findAll();
     }
 }

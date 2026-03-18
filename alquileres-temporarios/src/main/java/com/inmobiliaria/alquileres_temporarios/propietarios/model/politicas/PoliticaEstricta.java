@@ -1,13 +1,28 @@
 package com.inmobiliaria.alquileres_temporarios.propietarios.model.politicas;
 
 import com.inmobiliaria.alquileres_temporarios.reservas.model.Reserva;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class PoliticaEstricta implements PoliticaCancelacion {
+@Entity
+@DiscriminatorValue("ESTRICTA")
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class PoliticaEstricta extends PoliticaCancelacion {
+
+    private BigDecimal porcentajeRetencion;
+
     @Override
     public BigDecimal calcularPenalidad(Reserva reserva, LocalDate fechaCancelacion) {
-        // Retiene el 100% del monto total de la reserva
-        return reserva.getMontoTotal(); 
+        if (porcentajeRetencion == null) {
+            return reserva.getMontoTotal(); 
+        }
+        
+        return reserva.getMontoTotal().multiply(porcentajeRetencion).divide(BigDecimal.valueOf(100));
     }
 }
