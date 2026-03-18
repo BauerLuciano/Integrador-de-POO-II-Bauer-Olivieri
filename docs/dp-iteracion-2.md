@@ -35,7 +35,7 @@ El siguiente diagrama de clases UML refleja las nuevas entidades (Pagos, Gastos,
 
 ![Diagrama de Clases Iteración 2](../Diagramadeclase-2daiteracion.jpg)
 
-
+#### `En color rojo son las nuevas clases e interfaces`
 ---
 
 
@@ -46,8 +46,7 @@ El siguiente diagrama de clases UML refleja las nuevas entidades (Pagos, Gastos,
 
 La siguiente imagen refleja cómo se vería la pantalla del módulo de Liquidaciones y Reportes:
 
-!\[Wireframe Finanzas](../Wireframe2-POO2.png)
-
+![Wireframe Finanzas](../Wireframe2-POO2.png)
 
 
 ---
@@ -258,7 +257,7 @@ Lista de tareas técnicas necesarias para completar con éxito las historias de 
 
 
 
-\### Tareas HU-14 (Refactoring)
+### Tareas HU-14 (Refactoring)
 
-\- `T-14.1`: Revisión general de código, limpieza de imports y extracción de métodos largos en los Services de la Iteración 1.
+- `T-14.1`: Revisión general de código, limpieza de imports y extracción de métodos largos en los Services de la Iteración 1.
 
