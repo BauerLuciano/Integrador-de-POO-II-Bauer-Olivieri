@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +19,6 @@ public class ReservaController {
 
     private final ReservaService service;
 
-    @Autowired 
-    private ReservaService reservaService; 
-
     @PostMapping
     public ResponseEntity<?> crearReserva(@RequestBody Reserva reserva) {
         try {
@@ -30,6 +26,17 @@ public class ReservaController {
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- EL ENDPOINT NUEVO QUE PIDIÓ TU AMIGO ---
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerReservaPorId(@PathVariable Long id) {
+        try {
+            Reserva reserva = service.obtenerPorId(id); 
+            return ResponseEntity.ok(reserva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada");
         }
     }
 
@@ -65,6 +72,6 @@ public class ReservaController {
 
     @GetMapping
     public List<Reserva> listarTodas() {
-        return reservaService.obtenerTodas(); // Ahora Java sí sabe qué es esto
+        return service.obtenerTodas();
     }
 }

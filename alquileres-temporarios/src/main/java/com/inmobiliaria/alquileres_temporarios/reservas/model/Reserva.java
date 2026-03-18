@@ -49,7 +49,8 @@ public class Reserva implements BloqueoCalendario {
     @Column(nullable = false)
     private EstadoReserva estado = EstadoReserva.ACTIVA;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // SOLUCIÓN ACÁ: Cambiado de LAZY a EAGER para que Angular reciba los datos
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "propiedad_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
     private Propiedad propiedad;

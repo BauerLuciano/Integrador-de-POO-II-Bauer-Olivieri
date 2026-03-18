@@ -72,7 +72,6 @@ public class ReservaService {
         return reserva.getSaldoPendiente();
     }
 
-    // --- ACTUALIZADO PARA HU-10: CÁLCULO DE PENALIDAD CON STRATEGY ---
     @Transactional
     public Reserva cancelarReserva(Long reservaId) {
         Reserva reserva = reservaRepo.findById(reservaId)
@@ -82,13 +81,10 @@ public class ReservaService {
             throw new IllegalStateException("La reserva ya se encuentra cancelada.");
         }
 
-        // 1. Obtener la estrategia de cancelación de la propiedad
         PoliticaCancelacion politica = reserva.getPropiedad().getPoliticaCancelacion();
         
-        // 2. Calcular la penalidad usando el Strategy (pasando la fecha de hoy)
         BigDecimal penalidad = politica.calcularPenalidad(reserva, LocalDate.now());
         
-        // 3. Setear valores y guardar
         reserva.setMontoPenalidad(penalidad);
         reserva.setEstado(EstadoReserva.CANCELADA);
         
@@ -97,5 +93,10 @@ public class ReservaService {
 
     public List<Reserva> obtenerTodas() {
         return reservaRepo.findAll();
+    }
+
+    public Reserva obtenerPorId(Long id) {
+        return reservaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva con ID " + id + " no encontrada"));
     }
 }
