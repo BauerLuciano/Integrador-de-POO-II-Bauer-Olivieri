@@ -1,0 +1,120 @@
+<div class="container-fluid pt-2 pb-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-5">
+      <div class="card shadow border-0">
+        
+        <div class="card-header bg-dark text-white p-3">
+          <h5 class="mb-0">
+            <i class="bi bi-person-circle me-2"></i> 
+            {{ propietarioId ? 'Editar Propietario' : 'Alta de Propietario' }}
+          </h5>
+        </div>
+        
+        <div class="card-body p-4">
+          <form [formGroup]="propietarioForm" (ngSubmit)="guardar()">
+            
+            <div class="row mb-3">
+              <div class="col-md-5">
+                <label class="form-label fw-bold small">DNI</label>
+                <input type="text" formControlName="dni" class="form-control form-control-sm" 
+                       placeholder="Ej: 38123456"
+                       [class.is-invalid]="propietarioForm.get('dni')?.touched && propietarioForm.get('dni')?.invalid">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold small">Nombre</label>
+                <input type="text" formControlName="nombre" class="form-control form-control-sm"
+                       placeholder="Ingresa el nombre"
+                       [class.is-invalid]="propietarioForm.get('nombre')?.touched && propietarioForm.get('nombre')?.invalid">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold small">Apellido</label>
+                <input type="text" formControlName="apellido" class="form-control form-control-sm"
+                       placeholder="Ingresa el apellido"
+                       [class.is-invalid]="propietarioForm.get('apellido')?.touched && propietarioForm.get('apellido')?.invalid">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold small">Correo Electrónico</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text"><i class="bi bi-envelope small"></i></span>
+                  <input type="email" formControlName="email" class="form-control"
+                         [class.is-invalid]="propietarioForm.get('email')?.touched && propietarioForm.get('email')?.invalid"
+                         placeholder="ejemplo@correo.com">
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold small">Teléfono</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text"><i class="bi bi-telephone small"></i></span>
+                  <input type="text" formControlName="telefono" class="form-control"
+                         [class.is-invalid]="propietarioForm.get('telefono')?.touched && propietarioForm.get('telefono')?.invalid"
+                         placeholder="+54 9...">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mt-4 mb-2">
+              <h6 class="text-muted border-bottom pb-2"><i class="bi bi-cash-coin me-2"></i>Esquema de Comisión</h6>
+            </div>
+
+            <div formGroupName="esquemaComision" class="row bg-light p-3 rounded border mx-0 mb-3">
+              <div class="col-md-12 mb-3 px-1">
+                <label class="form-label fw-bold small">Tipo de Esquema</label>
+                <select formControlName="tipo_esquema" class="form-select form-select-sm">
+                  <option value="FIJA">Comisión Fija (%)</option>
+                  <option value="ESCALONADA">Comisión Escalonada (Umbral)</option>
+                </select>
+              </div>
+
+              @if (propietarioForm.get('esquemaComision.tipo_esquema')?.value === 'FIJA') {
+                <div class="col-md-6 mb-2 px-1">
+                  <label class="form-label small text-muted fw-bold">Porcentaje a Retener (%)</label>
+                  <input type="number" formControlName="porcentaje" class="form-control form-control-sm" placeholder="Ej: 10">
+                </div>
+              }
+
+              @if (propietarioForm.get('esquemaComision.tipo_esquema')?.value === 'ESCALONADA') {
+                <div class="col-md-4 mb-2 px-1">
+                  <label class="form-label small text-muted fw-bold">Umbral ($)</label>
+                  <input type="number" formControlName="montoUmbral" class="form-control form-control-sm" placeholder="Ej: 100000">
+                </div>
+                <div class="col-md-4 mb-2 px-1">
+                  <label class="form-label small text-muted fw-bold">Porc. Base (%)</label>
+                  <input type="number" formControlName="porcentajeBase" class="form-control form-control-sm" placeholder="Ej: 10">
+                </div>
+                <div class="col-md-4 mb-2 px-1">
+                  <label class="form-label small text-muted fw-bold">Porc. Exced. (%)</label>
+                  <input type="number" formControlName="porcentajeExcedente" class="form-control form-control-sm" placeholder="Ej: 5">
+                </div>
+              }
+            </div>
+            <hr class="my-3">
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-light btn-sm px-3 border" routerLink="/propietarios">
+                Cancelar
+              </button>
+              
+              <button type="submit" class="btn btn-primary btn-sm px-4 shadow-sm" [disabled]="propietarioForm.invalid">
+                <i class="bi bi-check-circle me-1"></i> 
+                {{ propietarioId ? 'Guardar Cambios' : 'Confirmar Registro' }}
+              </button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

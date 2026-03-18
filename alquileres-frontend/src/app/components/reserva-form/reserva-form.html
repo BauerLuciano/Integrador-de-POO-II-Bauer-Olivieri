@@ -1,0 +1,90 @@
+<div class="container-fluid pt-2 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-xl-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-dark text-white p-3">
+          <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i> Registrar Nueva Reserva</h5>
+        </div>
+
+        <div class="card-body p-4">
+          <form [formGroup]="reservaForm" (ngSubmit)="guardar()">
+            
+            <div class="row mb-4">
+              <div class="col-12">
+                <label class="form-label fw-bold small text-uppercase text-muted">Propiedad a alquilar</label>
+                <select formControlName="propiedad" class="form-select border-primary-subtle"
+                        [class.is-invalid]="reservaForm.get('propiedad')?.touched && reservaForm.get('propiedad')?.invalid">
+                  <option [ngValue]="null">Seleccione una propiedad...</option>
+                  @for (p of listaPropiedades; track p.id) {
+                    <option [ngValue]="p">{{ p.direccion }} (Dueño: {{ p.propietario?.apellido || 'N/A' }})</option>
+                  }
+                </select>
+                <div class="invalid-feedback">La propiedad es obligatoria.</div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-12">
+                <label class="form-label fw-bold small text-uppercase text-muted">Nombre del Inquilino</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                  <input type="text" formControlName="inquilino" class="form-control"
+                         placeholder="Ej: Homero Simpson"
+                         [class.is-invalid]="reservaForm.get('inquilino')?.touched && reservaForm.get('inquilino')?.invalid">
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-8">
+                <label class="form-label fw-bold small text-uppercase text-muted">Fecha de Check-In</label>
+                <input type="date" formControlName="fechaInicio" class="form-control"
+                       [class.is-invalid]="reservaForm.get('fechaInicio')?.touched && reservaForm.get('fechaInicio')?.invalid">
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-8">
+                <label class="form-label fw-bold small text-uppercase text-muted">Fecha de Check-Out</label>
+                <input type="date" formControlName="fechaFin" class="form-control"
+                       [class.is-invalid]="reservaForm.get('fechaFin')?.touched && reservaForm.get('fechaFin')?.invalid">
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-7">
+                <label class="form-label fw-bold small text-uppercase text-muted">Costo Total de Estadía</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-primary fw-bold">$</span>
+                  <input type="number" formControlName="montoTotal" class="form-control fw-bold" placeholder="0.00">
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-7">
+                <label class="form-label fw-bold small text-uppercase text-muted">Monto de Depósito</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-success fw-bold">$</span>
+                  <input type="number" formControlName="depositoRetenido" class="form-control fw-bold" placeholder="0.00">
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-end gap-3">
+              <button type="button" class="btn btn-light px-4 border" routerLink="/reservas">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary px-5 shadow fw-bold" [disabled]="reservaForm.invalid">
+                <i class="bi bi-check-circle me-2"></i> Confirmar Reserva
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="container mt-4 mb-5">
+  @if (loading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  } @else if (propiedad) {
+    <div class="card shadow border-0 overflow-hidden">
+      <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-house-door me-2"></i> Detalle de Propiedad</h4>
+        <span class="badge bg-light text-dark fs-6">{{ propiedad.estado || 'Disponible' }}</span>
+      </div>
+
+      <div class="card-body p-4">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h5 class="text-muted border-bottom pb-2 mb-3">Información General</h5>
+            
+            <p class="mb-2"><strong><i class="bi bi-geo-alt text-primary me-2"></i> Dirección:</strong> <br>
+               <span class="ms-4 fs-5">{{ propiedad.direccion }}</span></p>
+            
+            <p class="mb-2"><strong><i class="bi bi-cash-coin text-success me-2"></i> Precio por Noche:</strong> <br>
+               <span class="ms-4 fs-5 text-success fw-bold">{{ propiedad.precioPorNoche | currency:'USD':'symbol':'1.0-0' }}</span></p>
+               
+            <p class="mb-2"><strong><i class="bi bi-shield-check text-info me-2"></i> Depósito Requerido:</strong> <br>
+               <span class="ms-4">{{ propiedad.porcentajeDeposito }}%</span></p>
+               
+            <div class="mb-2">
+              <strong><i class="bi bi-file-earmark-text text-warning me-2"></i> Política de Cancelación:</strong> <br>
+              <span class="ms-4 badge bg-secondary mb-1">{{ propiedad.politicaCancelacion?.tipo }}</span>
+              
+              @if (propiedad.politicaCancelacion?.tipo === 'FLEXIBLE') {
+                <ul class="text-muted small ms-4 mb-0">
+                  <li><strong>Sin cargo:</strong> Hasta {{ propiedad.politicaCancelacion?.diasAnticipacionSinCargo }} días antes.</li>
+                  <li><strong>Penalidad tardía:</strong> {{ propiedad.politicaCancelacion?.porcentajePenalidadTardia }}% del total.</li>
+                </ul>
+              }
+
+              @if (propiedad.politicaCancelacion?.tipo === 'ESTRICTA') {
+                <ul class="text-muted small ms-4 mb-0">
+                  <li><strong>Retención:</strong> {{ propiedad.politicaCancelacion?.porcentajeRetencion }}% del total reservado.</li>
+                </ul>
+              }
+            </div>
+            </div>
+
+          <div class="col-md-6">
+            <h5 class="text-muted border-bottom pb-2 mb-3">Datos del Propietario</h5>
+            
+            <div class="d-flex align-items-center mb-3 ms-2">
+              <i class="bi bi-person-circle text-primary fs-1 me-3"></i>
+              <div>
+                <h5 class="mb-0 fw-bold">{{ propiedad.propietario?.nombre }} {{ propiedad.propietario?.apellido }}</h5>
+                <p class="text-muted mb-0 small">DNI: {{ propiedad.propietario?.dni }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer bg-light py-3 d-flex justify-content-between">
+        <button class="btn btn-outline-secondary fw-bold" (click)="volver()">
+          <i class="bi bi-arrow-left me-1"></i> Volver al Catálogo
+        </button>
+        <button class="btn btn-warning fw-bold text-dark" [routerLink]="['/propiedades/editar', propiedad.id]">
+          <i class="bi bi-pencil me-1"></i> Editar Propiedad
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-danger text-center shadow-sm">
+      <i class="bi bi-exclamation-triangle-fill fs-3 d-block mb-2"></i>
+      No se encontró la propiedad solicitada.
+    </div>
+  }
+</div>

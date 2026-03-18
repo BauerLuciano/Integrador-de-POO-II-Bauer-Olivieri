@@ -1,0 +1,21 @@
+/* src/app/components/navbar/navbar.component.css */
+.sidebar {
+  width: 280px;         /* Un poquito más ancho para que respire */
+  min-height: 100vh;    /* Altura mínima de toda la pantalla */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Para que los íconos se vean más pro */
+.nav-link i {
+  font-size: 1.2rem;
+  width: 25px;          /* Ancho fijo para que los textos queden alineados */
+  text-align: center;
+}
+
+/* Estilo del link cuando estás parado ahí */
+.nav-link.active {
+  background-color: #0d6efd !important; /* Azul Bootstrap */
+  border-radius: 8px;
+  margin: 0 5px;       /* Un pequeño margen para que no pegue al borde */
+}

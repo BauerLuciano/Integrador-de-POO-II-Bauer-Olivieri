@@ -1,0 +1,79 @@
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-dark text-white">
+      <h4 class="mb-0">{{ propiedadId ? 'Editar Propiedad' : 'Nueva Propiedad' }}</h4>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="row">
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Dirección</label>
+            <input type="text" formControlName="direccion" class="form-control">
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Propietario</label>
+            <select formControlName="propietario" class="form-select" [compareWith]="compararPropietarios">
+              <option [ngValue]="null">Seleccione un dueño...</option>
+              @for (p of propietarios; track p.id) {
+                <option [ngValue]="p">{{ p.nombre }} {{ p.apellido }} (DNI: {{ p.dni }})</option>
+              }
+            </select>
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Precio por Noche</label>
+            <input type="number" formControlName="precioPorNoche" class="form-control">
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Depósito (%)</label>
+            <input type="number" formControlName="porcentajeDeposito" class="form-control">
+          </div>
+
+          <div class="col-12 mt-3 mb-2">
+            <h5 class="text-muted border-bottom pb-2">Configuración de Cancelación</h5>
+          </div>
+
+          <div formGroupName="politicaCancelacion" class="row">
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Tipo de Política</label>
+              <select formControlName="tipo" class="form-select">
+                <option value="FLEXIBLE">Flexible</option>
+                <option value="ESTRICTA">Estricta</option>
+              </select>
+            </div>
+
+            @if (form.get('politicaCancelacion.tipo')?.value === 'FLEXIBLE') {
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Días de Anticipación (Sin cargo)</label>
+                <input type="number" formControlName="diasAnticipacionSinCargo" class="form-control">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Penalidad Tardía (%)</label>
+                <input type="number" formControlName="porcentajePenalidadTardia" class="form-control">
+              </div>
+            }
+
+            @if (form.get('politicaCancelacion.tipo')?.value === 'ESTRICTA') {
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Porcentaje de Retención (%)</label>
+                <input type="number" formControlName="porcentajeRetencion" class="form-control">
+              </div>
+            }
+          </div>
+          </div>
+        
+        <div class="text-end mt-3">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Volver Atrás</button>
+          
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+            <i class="bi bi-save me-1"></i> {{ propiedadId ? 'Guardar Cambios' : 'Crear Propiedad' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

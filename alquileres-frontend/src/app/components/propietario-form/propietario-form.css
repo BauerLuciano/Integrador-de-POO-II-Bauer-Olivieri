@@ -1,0 +1,64 @@
+.card {
+  border-radius: 12px;
+  border-top: 5px solid #0d6efd !important;
+  /* Un pequeño efecto de profundidad extra */
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+.form-label {
+  color: #495057;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  background-color: #fcfcfc;
+}
+
+.form-control:focus {
+  background-color: #fff;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border-radius: 8px 0 0 8px;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+}
+
+.btn-primary {
+  padding: 0.8rem 2rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.btn-light {
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+}
+
+/* Animación de entrada suave */
+.card {
+  animation: slideIn 0.5s ease-out;
+}
+
+.sidebar {
+  width: 280px;
+  height: 100vh;      /* Ocupa el 100% de la pantalla */
+  position: sticky;   /* SE QUEDA PEGADO */
+  top: 0;             /* Arriba de todo */
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;      /* Para que siempre esté por encima */
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

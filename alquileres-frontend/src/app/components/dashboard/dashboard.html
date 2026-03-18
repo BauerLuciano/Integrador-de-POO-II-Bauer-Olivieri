@@ -1,0 +1,104 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">SISTEMA DE GESTIÓN DE ALQUILERES TEMPORARIOS</h2>
+    <button class="btn btn-primary shadow-sm" routerLink="/propiedades/nueva">
+      <i class="bi bi-house-add me-2"></i> NUEVA PROPIEDAD
+    </button>
+  </div>
+
+  <div class="row g-4 mb-5 text-uppercase">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-3">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted fw-bold">PROPIEDADES TOTALES:</h6>
+          <h2 class="card-title fw-bold mb-0">{{ totalPropiedades }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-3 border-start border-primary border-4">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted fw-bold">RESERVAS ACTIVAS:</h6>
+          <h2 class="card-title fw-bold mb-0 text-primary">{{ totalReservasActivas }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-3">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted fw-bold">DISPONIBLES:</h6>
+          <h2 class="card-title fw-bold text-success">{{ propiedadesDisponibles }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-5">
+    <div class="card-header bg-white py-3">
+      <h5 class="mb-0 fw-bold text-secondary">CATÁLOGO DE PROPIEDADES</h5>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-light text-muted small">
+          <tr>
+            <th>DIRECCIÓN</th>
+            <th>PROPIETARIO</th>
+            <th>TARIFA/NOCHE</th>
+            <th>ESTADO</th>
+            <th class="text-center">ACCIONES</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prop of propiedades; track prop.id) {
+          <tr class="align-middle">
+            <td>{{ prop.direccion }}</td>
+            <td>{{ prop.propietario?.nombre || 'S/D' }} {{ prop.propietario?.apellido || '' }}</td>
+            <td class="fw-bold text-dark">{{ prop.precioPorNoche | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td>
+              <span class="badge rounded-pill px-3" 
+                [ngClass]="{'bg-success-subtle text-success border border-success': prop.estado === 'Disponible', 'bg-danger-subtle text-danger border border-danger': prop.estado !== 'Disponible'}">
+                {{ prop.estado }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-link btn-sm p-1 text-primary"><i class="bi bi-search"></i></button>
+              <button class="btn btn-link btn-sm p-1 text-success"><i class="bi bi-calendar-plus"></i></button>
+              <button class="btn btn-link btn-sm p-1 text-warning"><i class="bi bi-pencil"></i></button>
+            </td>
+          </tr>
+          } @empty {
+          <tr><td colspan="5" class="text-center py-5 text-muted small">No hay propiedades registradas.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+      <h5 class="mb-0 fw-bold text-secondary">ÚLTIMAS RESERVAS</h5>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-light text-muted small">
+          <tr>
+            <th>DIRECCIÓN</th>
+            <th>PROPIETARIO</th>
+            <th>TARIFA TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (res of reservas; track res.id) {
+          <tr class="align-middle">
+            <td>{{ res.propiedad?.direccion || 'Propiedad no encontrada' }}</td>
+            <td>{{ res.propiedad?.propietario?.nombre || 'S/D' }} {{ res.propiedad?.propietario?.apellido || '' }}</td>
+            <td class="fw-bold text-primary">{{ res.montoTotal | currency:'USD':'symbol':'1.0-0' }}</td>
+          </tr>
+          } @empty {
+          <tr><td colspan="3" class="text-center py-4 text-muted small">No hay reservas registradas recientemente.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
