@@ -1,5 +1,6 @@
 package com.inmobiliaria.alquileres_temporarios.reservas.controller;
 
+import com.inmobiliaria.alquileres_temporarios.reservas.model.Pago;
 import com.inmobiliaria.alquileres_temporarios.reservas.model.Reserva;
 import com.inmobiliaria.alquileres_temporarios.reservas.service.ReservaService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,36 @@ public class ReservaController {
         try {
             Reserva nuevaReserva = service.crearReserva(reserva);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/pagos")
+    public ResponseEntity<?> registrarPago(@PathVariable Long id, @RequestBody Pago pago) {
+        try {
+            Reserva reservaActualizada = service.registrarPago(id, pago);
+            return ResponseEntity.ok(reservaActualizada);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/saldo")
+    public ResponseEntity<?> consultarSaldo(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(service.consultarSaldo(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // --- NUEVO ENDPOINT DE CANCELACIÓN ---
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<?> cancelarReserva(@PathVariable Long id) {
+        try {
+            Reserva reservaCancelada = service.cancelarReserva(id);
+            return ResponseEntity.ok(reservaCancelada);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
