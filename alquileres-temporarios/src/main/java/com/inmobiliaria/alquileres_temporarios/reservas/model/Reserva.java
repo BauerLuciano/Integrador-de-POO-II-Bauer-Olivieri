@@ -46,11 +46,20 @@ public class Reserva implements BloqueoCalendario {
   
     private BigDecimal montoPenalidad = BigDecimal.ZERO;
 
+    @Column(name = "liquidada")
+    private boolean liquidada = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoReserva estado = EstadoReserva.ACTIVA;
 
-    // SOLUCIÓN ACÁ: Cambiado de LAZY a EAGER para que Angular reciba los datos
+    // NUEVOS CAMPOS PARA LA CANCELACIÓN
+    @Column(length = 100)
+    private String motivoCancelacion;
+
+    @Column(length = 500)
+    private String detalleCancelacion;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "propiedad_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 

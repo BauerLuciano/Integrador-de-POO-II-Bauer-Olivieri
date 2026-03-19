@@ -25,8 +25,8 @@ export class ReservaService {
     return this.http.get<any>(`${this.apiUrl}/ingresos/propietario/${propietarioId}?inicio=${inicio}&fin=${fin}`);
   }
 
-  cancelarReserva(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/cancelar`, {}); 
+  cancelarReserva(id: number, motivo: string, detalle: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/cancelar?motivo=${encodeURIComponent(motivo)}&detalle=${encodeURIComponent(detalle)}`, {}); 
   }
 
   getReservaById(id: number): Observable<any> {

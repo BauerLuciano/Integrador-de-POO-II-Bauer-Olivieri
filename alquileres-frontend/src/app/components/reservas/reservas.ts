@@ -21,6 +21,10 @@ export class ReservasComponent implements OnInit {
   filtroTexto: string = '';
   filtroEstado: string = '';
 
+  reservaACancelar: any = null;
+  motivoSeleccionado: string = '';
+  detalleCancelacion: string = '';
+
   private reservaService = inject(ReservaService);
 
   ngOnInit(): void {
@@ -42,7 +46,6 @@ export class ReservasComponent implements OnInit {
     });
   }
 
-  // LÓGICA DE FILTRADO
   filtrarReservas(): void {
     this.listaReservas = this.todasLasReservas.filter(res => {
       const termino = this.filtroTexto.toLowerCase();
@@ -57,23 +60,35 @@ export class ReservasComponent implements OnInit {
     });
   }
 
-  cancelarReserva(reserva: any) {
-    if (confirm(`¿Estás seguro de que querés cancelar la reserva de ${reserva.inquilino}?`)) {
-      
-      this.reservaService.cancelarReserva(reserva.id).subscribe({
-        next: () => {
-          const index = this.todasLasReservas.findIndex(r => r.id === reserva.id);
-          if (index !== -1) {
-            this.todasLasReservas[index].estado = 'CANCELADA';
-            this.filtrarReservas();
-          }
-          alert('¡Reserva dada de baja exitosamente!');
-        },
-        error: (err) => {
-          console.error('Error al cancelar:', err);
-          alert('Hubo un error. No se pudo cancelar la reserva.');
+  abrirModalCancelacion(reserva: any) {
+    this.reservaACancelar = reserva;
+    this.motivoSeleccionado = '';
+    this.detalleCancelacion = '';
+    
+    const modal = new (window as any).bootstrap.Modal(document.getElementById('modalCancelacion'));
+    modal.show();
+  }
+
+  confirmarCancelacion() {
+    if (!this.reservaACancelar || !this.motivoSeleccionado) return;
+
+    this.reservaService.cancelarReserva(this.reservaACancelar.id, this.motivoSeleccionado, this.detalleCancelacion).subscribe({
+      next: () => {
+        const modalElement = document.getElementById('modalCancelacion');
+        const modalInstance = (window as any).bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) modalInstance.hide();
+
+        const index = this.todasLasReservas.findIndex(r => r.id === this.reservaACancelar.id);
+        if (index !== -1) {
+          this.todasLasReservas[index].estado = 'CANCELADA';
+          this.filtrarReservas();
         }
-      });
-    }
+        alert(`¡Reserva cancelada exitosamente!\nMotivo: ${this.motivoSeleccionado}`);
+      },
+      error: (err) => {
+        console.error('Error al cancelar:', err);
+        alert("No se pudo cancelar: " + (err.error?.message || err.message));
+      }
+    });
   }
 }

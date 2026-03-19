@@ -143,17 +143,52 @@
       <button class="btn btn-outline-dark" (click)="descargarPDF()">
         <i class="bi bi-file-pdf me-2"></i>Exportar a PDF
       </button>
-      <button class="btn btn-primary px-4 shadow">Liquidar y marcar como pagado</button>
+      <button class="btn btn-primary px-4 shadow" (click)="confirmarLiquidacion()">
+        Liquidar y marcar como pagado
+      </button>
     </div>
-  }
+  } 
 
-  @if (!datos && !mostrarEstadisticas) {
+  @if (!datos && !mostrarEstadisticas && historialPagos.length === 0) {
     <div class="text-center py-5">
       <div class="display-1 text-muted opacity-25 mb-3">
         <i class="bi bi-clipboard-data"></i>
       </div>
       <h4 class="text-muted">No hay datos para mostrar</h4>
       <p class="text-secondary">Seleccioná un propietario y generá un reporte o estadística.</p>
+    </div>
+  }
+
+  @if (historialPagos.length > 0 && !mostrarEstadisticas) {
+    <hr class="my-5">
+    <h5 class="fw-bold mb-3 text-success"><i class="bi bi-check-circle-fill me-2"></i>Historial de Liquidaciones Pagadas</h5>
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-0">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="bg-success text-white small">
+            <tr>
+              <th>Nº LIQUIDACIÓN</th>
+              <th>FECHA EMISIÓN</th>
+              <th>PERÍODO (Mes/Año)</th>
+              <th>BRUTO</th>
+              <th>COMISIONES</th>
+              <th>NETO PAGADO</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (pago of historialPagos; track pago.id) {
+              <tr>
+                <td class="fw-bold">#{{ pago.id }}</td>
+                <td>{{ pago.fechaEmision }}</td>
+                <td>{{ pago.mes }} / {{ pago.anio }}</td>
+                <td>{{ pago.totalBruto | currency:'USD':'symbol':'1.0-0' }}</td>
+                <td class="text-danger">-{{ pago.totalComisiones | currency:'USD':'symbol':'1.0-0' }}</td>
+                <td class="fw-bold text-success">{{ pago.netoAPagar | currency:'USD':'symbol':'1.0-0' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 </div>

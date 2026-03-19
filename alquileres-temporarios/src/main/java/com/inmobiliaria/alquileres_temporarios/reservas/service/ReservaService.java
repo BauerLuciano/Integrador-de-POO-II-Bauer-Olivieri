@@ -30,7 +30,7 @@ public class ReservaService {
     private final ReservaRepository reservaRepo;
     private final PropiedadRepository propiedadRepo;
     private final PropiedadService propiedadService; 
-    private final GastoRepository gastoRepo; // Inyectamos gastos
+    private final GastoRepository gastoRepo;
 
     @Transactional
     public Reserva crearReserva(Reserva reserva) {
@@ -58,13 +58,37 @@ public class ReservaService {
         return reserva.getSaldoPendiente();
     }
 
+    // CORREGIDO: Ahora recibe el motivo y detalle y los guarda
     @Transactional
-    public Reserva cancelarReserva(Long reservaId) {
+    public Reserva cancelarReserva(Long reservaId, String motivo, String detalle) {
         Reserva reserva = reservaRepo.findById(reservaId).orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        
+        if (reserva.isLiquidada()) {
+            throw new IllegalStateException("La reserva ya fue liquidada. No se puede cancelar.");
+        }
+        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
+            throw new IllegalStateException("La reserva ya se encuentra cancelada.");
+        }
+
+        // GUARDAMOS LOS TEXTOS NUEVOS
+        reserva.setMotivoCancelacion(motivo);
+        reserva.setDetalleCancelacion(detalle);
+
         PoliticaCancelacion politica = reserva.getPropiedad().getPoliticaCancelacion();
-        BigDecimal penalidad = politica.calcularPenalidad(reserva, LocalDate.now());
-        reserva.setMontoPenalidad(penalidad);
+        if (politica != null) {
+            BigDecimal penalidad = politica.calcularPenalidad(reserva, LocalDate.now());
+            reserva.setMontoPenalidad(penalidad);
+        } else {
+            reserva.setMontoPenalidad(BigDecimal.ZERO);
+        }
+
         reserva.setEstado(EstadoReserva.CANCELADA);
+        
+        // Liberar la propiedad
+        Propiedad prop = reserva.getPropiedad();
+        prop.setEstado("Disponible");
+        propiedadRepo.save(prop);
+        
         return reservaRepo.save(reserva);
     }
 
@@ -76,7 +100,6 @@ public class ReservaService {
         return reservaRepo.findById(id).orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
     }
 
-    // --- REPORTES HU-13 ---
     public List<Reserva> obtenerHistorialPorPropiedad(Long propiedadId) {
         return reservaRepo.findByPropiedadIdOrderByFechaInicioDesc(propiedadId);
     }
@@ -89,10 +112,9 @@ public class ReservaService {
         return new IngresosPropietarioDTO(propietarioId, reservas.size(), ingresosTotales);
     }
 
-    // --- MÉTODO PARA EL BOTÓN LIQUIDAR ---
     public ReporteLiquidacionDTO generarLiquidacion(Long propietarioId, int mes, int anio) {
-        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodo(propietarioId, mes, anio);
-        List<com.inmobiliaria.alquileres_temporarios.gastos.model.GastoMantenimiento> gastos = gastoRepo.buscarGastosPorPropietarioYPeriodo(propietarioId, mes, anio);
+        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
+        List<com.inmobiliaria.alquileres_temporarios.gastos.model.GastoMantenimiento> gastos = gastoRepo.buscarGastosPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
 
         ReporteLiquidacionDTO dto = new ReporteLiquidacionDTO();
 

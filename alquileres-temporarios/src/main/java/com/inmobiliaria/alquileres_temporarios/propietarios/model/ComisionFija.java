@@ -1,9 +1,10 @@
 package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("FIJA")

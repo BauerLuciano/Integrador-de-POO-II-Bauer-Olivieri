@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ReservaController {
 
     private final ReservaService service;
-    private final PdfService pdfService; // Inyectamos el servicio de PDF
+    private final PdfService pdfService;
 
     @PostMapping
     public ResponseEntity<?> crearReserva(@RequestBody Reserva reserva) {
@@ -62,7 +62,6 @@ public class ReservaController {
         pdfService.exportarLiquidacion(response, data);
     }
 
-    // --- REPORTES HU-13 ---
     @GetMapping("/historial/propiedad/{propiedadId}")
     public ResponseEntity<List<Reserva>> historialPropiedad(@PathVariable Long propiedadId) {
         return ResponseEntity.ok(service.obtenerHistorialPorPropiedad(propiedadId));
@@ -89,9 +88,12 @@ public class ReservaController {
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<?> cancelarReserva(@PathVariable Long id) {
+    public ResponseEntity<?> cancelarReserva(
+            @PathVariable Long id,
+            @RequestParam(required = false) String motivo,
+            @RequestParam(required = false) String detalle) {
         try { 
-            return ResponseEntity.ok(service.cancelarReserva(id));
+            return ResponseEntity.ok(service.cancelarReserva(id, motivo, detalle));
         } catch (Exception e) { 
             return ResponseEntity.badRequest().body(e.getMessage()); 
         }

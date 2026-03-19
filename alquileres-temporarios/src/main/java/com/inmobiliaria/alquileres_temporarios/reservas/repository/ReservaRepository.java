@@ -15,10 +15,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     
     List<Reserva> findByPropiedadId(Long propiedadId);
 
+    // MODIFICADO: Solo trae reservas NO liquidadas
     @Query("SELECT r FROM Reserva r WHERE r.propiedad.propietario.id = :propietarioId " +
        "AND EXTRACT(MONTH FROM r.fechaInicio) = :mes " +
-       "AND EXTRACT(YEAR FROM r.fechaInicio) = :anio")
-    List<Reserva> buscarPorPropietarioYPeriodo(Long propietarioId, int mes, int anio);
+       "AND EXTRACT(YEAR FROM r.fechaInicio) = :anio " +
+       "AND r.liquidada = false")
+    List<Reserva> buscarPorPropietarioYPeriodoPendientes(Long propietarioId, int mes, int anio);
 
     List<Reserva> findByPropiedadIdOrderByFechaInicioDesc(Long propiedadId);
 

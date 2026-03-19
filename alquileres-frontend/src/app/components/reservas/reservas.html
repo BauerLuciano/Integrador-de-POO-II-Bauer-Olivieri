@@ -80,7 +80,10 @@
                     <button class="btn btn-outline-info btn-sm" [routerLink]="['/reservas/detalle', res.id]" title="Ver Detalle">
                       <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-outline-danger btn-sm" (click)="cancelarReserva(res)" title="Cancelar" [disabled]="res.estado === 'CANCELADA'">
+                    <button class="btn btn-outline-danger btn-sm" 
+                            (click)="abrirModalCancelacion(res)" 
+                            title="Cancelar" 
+                            [disabled]="res.estado === 'CANCELADA' || res.liquidada">
                       <i class="bi bi-x-circle"></i>
                     </button>
                   </div>
@@ -98,6 +101,43 @@
             }
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalCancelacion" tabindex="-1" aria-labelledby="modalCancelacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalCancelacionLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Cancelar Reserva</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="mb-4">Estás a punto de cancelar la reserva de <strong class="text-primary">{{ reservaACancelar?.inquilino }}</strong> en <strong>{{ reservaACancelar?.propiedad?.direccion }}</strong>. <br><small class="text-muted">Se aplicarán las penalidades correspondientes según la política.</small></p>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-muted">Motivo de la cancelación <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="motivoSeleccionado">
+            <option value="" disabled selected>Seleccioná un motivo...</option>
+            <option value="Inconveniente del Inquilino">Inconveniente del Inquilino (Enfermedad, Viaje)</option>
+            <option value="Problemas con la Propiedad">Problemas con la Propiedad</option>
+            <option value="Decisión del Propietario">Decisión del Propietario</option>
+            <option value="Error en la carga">Error en la carga de la reserva</option>
+            <option value="Otro">Otro motivo</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold small text-muted">Detalles adicionales (Opcional)</label>
+          <textarea class="form-control" rows="2" placeholder="Escribí más detalles acá si es necesario..." [(ngModel)]="detalleCancelacion"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-danger px-4" (click)="confirmarCancelacion()" [disabled]="!motivoSeleccionado">
+          Sí, Cancelar Reserva
+        </button>
       </div>
     </div>
   </div>

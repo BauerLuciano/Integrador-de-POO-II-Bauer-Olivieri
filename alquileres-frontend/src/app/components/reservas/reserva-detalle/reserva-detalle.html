@@ -16,7 +16,12 @@
           
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-3">
             <h5 class="mb-0"><i class="bi bi-receipt me-2"></i> Detalle de Reserva #{{ reserva.id }}</h5>
-            <span class="badge bg-success border border-light">Confirmada</span>
+            
+            @if (reserva.estado === 'CANCELADA') {
+              <span class="badge bg-danger border border-light">Cancelada</span>
+            } @else {
+              <span class="badge bg-success border border-light">Confirmada</span>
+            }
           </div>
           
           <div class="card-body p-4">
@@ -45,6 +50,38 @@
                 <p class="fw-bold mb-0 text-primary fs-5">{{ reserva.fechaFin | date:'dd/MM/yyyy' }}</p>
               </div>
             </div>
+
+            @if (reserva.estado === 'CANCELADA') {
+              <div class="alert alert-danger shadow-sm mb-4 border-start border-danger border-4">
+                <h6 class="alert-heading text-danger fw-bold mb-0">
+                  <i class="bi bi-x-octagon-fill me-2"></i>Detalles de la Cancelación
+                </h6>
+                <hr class="border-danger opacity-25 my-2">
+                
+                <div class="row g-2">
+                  <div class="col-12">
+                    <p class="mb-0 small text-muted text-uppercase fw-bold">Motivo principal</p>
+                    <p class="mb-2 fw-medium text-dark">{{ reserva.motivoCancelacion || 'No especificado' }}</p>
+                  </div>
+                  
+                  @if (reserva.detalleCancelacion) {
+                    <div class="col-12">
+                      <p class="mb-0 small text-muted text-uppercase fw-bold">Comentarios adicionales</p>
+                      <p class="mb-2 text-dark">{{ reserva.detalleCancelacion }}</p>
+                    </div>
+                  }
+                </div>
+                
+                @if (reserva.montoPenalidad > 0) {
+                  <div class="mt-2 p-2 bg-white rounded border border-danger-subtle">
+                    <p class="mb-0 text-danger fw-bold small">
+                      <i class="bi bi-info-circle-fill me-1"></i> 
+                      Penalidad retenida al inquilino: {{ reserva.montoPenalidad | currency:'USD':'symbol':'1.0-0' }}
+                    </p>
+                  </div>
+                }
+              </div>
+            }
 
             <h6 class="border-bottom pb-2 mb-3 fw-bold text-muted"><i class="bi bi-cash-stack me-2"></i>Desglose Financiero</h6>
             
