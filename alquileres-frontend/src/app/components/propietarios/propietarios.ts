@@ -1,22 +1,26 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Necesario para pipes y directivas
+import { CommonModule } from '@angular/common'; 
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms'; 
 import { PropietarioService } from '../../services/propietario';
 import { Propietario } from '../../models/propietario';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-propietarios',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Lo agregamos aquí
+  imports: [CommonModule, RouterModule, FormsModule], 
   templateUrl: './propietarios.html',
   styleUrl: './propietarios.css'
 })
 export class PropietariosComponent implements OnInit {
   
-  // Lista donde guardaremos lo que venga de Spring Boot
-  propietarios: Propietario[] = [];
+  todosLosPropietarios: Propietario[] = []; 
+  propietarios: Propietario[] = [];         
 
-  // Inyectamos el servicio (sintaxis moderna con inject)
+  // VARIABLES DE FILTRO
+  filtroTexto: string = '';
+  filtroEstado: string = '';
+
   private propietarioService = inject(PropietarioService);
 
   ngOnInit(): void {
@@ -26,12 +30,29 @@ export class PropietariosComponent implements OnInit {
   listar(): void {
     this.propietarioService.getPropietarios().subscribe({
       next: (data) => {
-        this.propietarios = data;
-        console.log('Datos recibidos:', data);
+        this.todosLosPropietarios = data;
+        this.propietarios = data; 
       },
-      error: (err) => {
-        console.error('Error al conectar con el Backend:', err);
-      }
+      error: (err) => console.error('Error al conectar con el Backend:', err)
+    });
+  }
+
+  // LÓGICA DE FILTRADO
+  filtrarPropietarios(): void {
+    this.propietarios = this.todosLosPropietarios.filter(p => {
+      // 1. Filtro por texto (Nombre, Apellido o DNI)
+      const termino = this.filtroTexto.toLowerCase();
+      const coincideTexto = !termino || 
+        (p.nombre?.toLowerCase() || '').includes(termino) ||
+        (p.apellido?.toLowerCase() || '').includes(termino) ||
+        (p.dni?.toLowerCase() || '').includes(termino);
+
+      // 2. Filtro por Estado (Activo/Inactivo)
+      let coincideEstado = true;
+      if (this.filtroEstado === 'activo') coincideEstado = p.activo !== false;
+      if (this.filtroEstado === 'inactivo') coincideEstado = p.activo === false;
+
+      return coincideTexto && coincideEstado;
     });
   }
 
@@ -39,9 +60,10 @@ export class PropietariosComponent implements OnInit {
     if (confirm('¿Estás seguro de que querés dar de baja a este propietario?')) {
       this.propietarioService.eliminarPropietario(id).subscribe({
         next: () => {
-          const index = this.propietarios.findIndex(p => p.id === id);
+          const index = this.todosLosPropietarios.findIndex(p => p.id === id);
           if (index !== -1) {
-            this.propietarios[index].activo = false;
+            this.todosLosPropietarios[index].activo = false;
+            this.filtrarPropietarios();
           }
         },
         error: (err) => {
@@ -56,10 +78,10 @@ export class PropietariosComponent implements OnInit {
     if (confirm('¿Estás seguro de que querés reactivar a este propietario?')) {
       this.propietarioService.reactivarPropietario(id).subscribe({
         next: () => {
-          // Buscamos al dueño en la lista y lo ponemos ACTIVO visualmente
-          const index = this.propietarios.findIndex(p => p.id === id);
+          const index = this.todosLosPropietarios.findIndex(p => p.id === id);
           if (index !== -1) {
-            this.propietarios[index].activo = true;
+            this.todosLosPropietarios[index].activo = true;
+            this.filtrarPropietarios();
           }
           alert('Propietario reactivado con éxito.');
         },

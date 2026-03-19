@@ -1,5 +1,7 @@
 package com.inmobiliaria.alquileres_temporarios.gastos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.inmobiliaria.alquileres_temporarios.propiedades.model.Propiedad;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,5 +22,6 @@ public class GastoMantenimiento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "propiedad_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Propiedad propiedad;
 }

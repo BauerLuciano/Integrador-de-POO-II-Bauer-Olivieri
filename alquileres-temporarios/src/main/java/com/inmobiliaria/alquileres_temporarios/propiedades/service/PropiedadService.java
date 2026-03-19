@@ -6,7 +6,9 @@ import com.inmobiliaria.alquileres_temporarios.propiedades.repository.ExcepcionR
 import com.inmobiliaria.alquileres_temporarios.propiedades.repository.PropiedadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // <-- EL ESCUDO IMPORTADO
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,14 +19,17 @@ public class PropiedadService {
     private final PropiedadRepository propiedadRepo;
     private final ExcepcionRepository excepcionRepo;
 
+    @Transactional
     public Propiedad guardarPropiedad(Propiedad propiedad) {
-        if (propiedad.getPrecioPorNoche() <= 0 || propiedad.getPorcentajeDeposito() < 0) {
+        if (propiedad.getPrecioPorNoche().compareTo(BigDecimal.ZERO) <= 0 || 
+            propiedad.getPorcentajeDeposito().compareTo(BigDecimal.ZERO) < 0) {
+            
             throw new RuntimeException("El precio debe ser mayor a 0 y el depósito no puede ser negativo.");
         }
         return propiedadRepo.save(propiedad);
     }
 
-
+    @Transactional
     public ExcepcionCalendario bloquearFechas(Long propiedadId, LocalDate inicio, LocalDate fin, String motivo) {
         Propiedad p = propiedadRepo.findById(propiedadId)
                 .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
@@ -45,29 +50,26 @@ public class PropiedadService {
     }
 
     public List<Propiedad> obtenerTodas() {
-        return propiedadRepo.findAll();
+        return propiedadRepo.findAllOptimizadas();
     }
 
+    @Transactional
     public void eliminar(Long id) {
-        // 1. Verificamos si la propiedad realmente existe en la base de datos
         if (!propiedadRepo.existsById(id)) {
             throw new RuntimeException("No se puede eliminar: La propiedad con ID " + id + " no existe.");
         }
-        // 2. Si existe, procedemos a eliminarla
         propiedadRepo.deleteById(id);
     }
 
-    // BUSCAR POR ID 
     public Propiedad buscarPorId(Long id) {
         return propiedadRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("No se encontró la propiedad con ID: " + id));
     }
 
-    // ACTUALIZAR 
+    @Transactional
     public Propiedad actualizar(Long id, Propiedad datosNuevos) {
         Propiedad propiedadExistente = buscarPorId(id);
-        
-        // Pisamos los datos viejos con los nuevos que vienen de Angular
+    
         propiedadExistente.setDireccion(datosNuevos.getDireccion());
         propiedadExistente.setPrecioPorNoche(datosNuevos.getPrecioPorNoche());
         propiedadExistente.setPorcentajeDeposito(datosNuevos.getPorcentajeDeposito());
