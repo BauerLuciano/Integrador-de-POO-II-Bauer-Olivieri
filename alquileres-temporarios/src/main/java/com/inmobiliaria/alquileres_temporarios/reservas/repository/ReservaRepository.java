@@ -24,4 +24,9 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     @Query("SELECT r FROM Reserva r WHERE r.propiedad.propietario.id = :propietarioId AND r.fechaInicio >= :inicio AND r.fechaFin <= :fin AND r.estado != 'CANCELADA'")
     List<Reserva> findReservasParaIngresos(@Param("propietarioId") Long propietarioId, @Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
+
+    @Query("SELECT r FROM Reserva r " +
+           "LEFT JOIN FETCH r.propiedad p " +
+           "LEFT JOIN FETCH p.propietario")
+    List<Reserva> findAllOptimizadas();
 }

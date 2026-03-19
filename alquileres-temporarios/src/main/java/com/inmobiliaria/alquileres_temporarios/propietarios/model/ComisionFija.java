@@ -3,13 +3,13 @@ package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 @DiscriminatorValue("FIJA")
 public class ComisionFija extends EsquemaComision {
 
-    private BigDecimal porcentaje; // Ej: 0.15 para 15%
-
+    private BigDecimal porcentaje;
     public ComisionFija() {}
 
     public ComisionFija(BigDecimal porcentaje) {
@@ -19,7 +19,8 @@ public class ComisionFija extends EsquemaComision {
     @Override
     public BigDecimal calcularComision(BigDecimal montoBase) {
         if (montoBase == null || porcentaje == null) return BigDecimal.ZERO;
-        return montoBase.multiply(porcentaje);
+        return montoBase.multiply(porcentaje)
+            .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getPorcentaje() { return porcentaje; }

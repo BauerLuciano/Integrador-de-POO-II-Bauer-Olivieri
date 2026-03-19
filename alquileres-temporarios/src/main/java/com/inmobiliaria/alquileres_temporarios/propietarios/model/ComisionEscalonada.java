@@ -3,6 +3,7 @@ package com.inmobiliaria.alquileres_temporarios.propietarios.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import java.math.BigDecimal;
+import java.math.RoundingMode; 
 
 @Entity
 @DiscriminatorValue("ESCALONADA")
@@ -18,12 +19,19 @@ public class ComisionEscalonada extends EsquemaComision {
     public BigDecimal calcularComision(BigDecimal montoBase) {
         if (montoBase == null) return BigDecimal.ZERO;
         
+        BigDecimal cien = new BigDecimal("100");
+        
         if (montoBase.compareTo(montoUmbral) <= 0) {
-            return montoBase.multiply(porcentajeBase);
+            return montoBase.multiply(porcentajeBase)
+                            .divide(cien, 2, RoundingMode.HALF_UP);
         } else {
-            BigDecimal comisionBase = montoUmbral.multiply(porcentajeBase);
+            BigDecimal comisionBase = montoUmbral.multiply(porcentajeBase)
+                                                 .divide(cien, 2, RoundingMode.HALF_UP);
+            
             BigDecimal excedente = montoBase.subtract(montoUmbral);
-            BigDecimal comisionExcedente = excedente.multiply(porcentajeExcedente);
+            BigDecimal comisionExcedente = excedente.multiply(porcentajeExcedente)
+                                                    .divide(cien, 2, RoundingMode.HALF_UP);
+            
             return comisionBase.add(comisionExcedente);
         }
     }

@@ -1,75 +1,97 @@
-<div class="container-fluid pt-2 pb-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-0 text-dark">Gestión de Reservas</h2>
-      <p class="text-muted small">Historial y control de estadías activas.</p>
+<div class="container mt-4 pb-5">
+  <div class="card shadow border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+      <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Gestión de Reservas</h4>
+      <button class="btn btn-light btn-sm font-weight-bold shadow-sm" routerLink="/reservas/nueva">
+        <i class="bi bi-calendar-plus me-1"></i> NUEVA RESERVA
+      </button>
     </div>
-    <button class="btn btn-primary shadow-sm px-4 fw-bold" routerLink="/reservas/nueva">
-      <i class="bi bi-calendar-plus me-2"></i> NUEVA RESERVA
-    </button>
-  </div>
 
-  <div class="card border-0 shadow-sm">
+    <div class="card-body bg-light border-bottom p-3">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="input-group shadow-sm">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" 
+                   placeholder="Buscar por dirección, inquilino o dueño..."
+                   [(ngModel)]="filtroTexto" 
+                   (ngModelChange)="filtrarReservas()">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select shadow-sm" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarReservas()">
+            <option value="">Todos los estados</option>
+            <option value="CONFIRMADA">🟢 Confirmadas</option>
+            <option value="CANCELADA">🔴 Canceladas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-          <thead class="table-light text-muted small fw-bold">
+          <thead class="table-light text-muted small text-uppercase">
             <tr>
-              <th class="ps-4">PROPIEDAD</th>
-              <th>INQUILINO</th>
-              <th>CHECK-IN / CHECK-OUT</th>
-              <th>TOTAL</th>
-              <th class="text-center pe-4">ACCIONES</th>
+              <th class="ps-4">Propiedad</th>
+              <th>Inquilino</th>
+              <th>Estadía</th>
+              <th>Estado</th> 
+              <th>Total</th>
+              <th class="text-center pe-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @if (loading) {
-              <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+              <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
             }
 
             @for (res of listaReservas; track res.id) {
               <tr>
                 <td class="ps-4">
-                  <div class="fw-bold text-dark">{{ res.propiedad?.direccion || 'Propiedad no encontrada' }}</div>
-                  <div class="small text-muted">
-                    {{ res.propiedad?.propietario?.apellido || 'S/D' }}, {{ res.propiedad?.propietario?.nombre || '' }}
-                  </div>
+                  <div class="fw-bold text-dark">{{ res.propiedad?.direccion || 'S/D' }}</div>
+                  <div class="small text-muted">Dueño: {{ res.propiedad?.propietario?.apellido }}</div>
                 </td>
                 
                 <td>
                   <div class="d-flex align-items-center">
-                    <i class="bi bi-person-circle fs-5 text-primary me-2"></i>
-                    <span class="fw-medium text-dark">{{ res.inquilino || 'No registrado' }}</span>
+                    <i class="bi bi-person-circle text-primary me-2"></i>
+                    <span class="fw-medium text-dark">{{ res.inquilino }}</span>
                   </div>
                 </td>
 
                 <td>
-                  <span class="badge bg-light text-dark border">
-                    {{ res.fechaInicio | date:'dd/MM/yyyy' }}
-                  </span>
-                  <i class="bi bi-arrow-right mx-2 text-muted"></i>
-                  <span class="badge bg-light text-dark border">
-                    {{ res.fechaFin | date:'dd/MM/yyyy' }}
+                  <span class="small">{{ res.fechaInicio | date:'dd/MM' }} al {{ res.fechaFin | date:'dd/MM' }}</span>
+                </td>
+
+                <td>
+                  <span class="badge rounded-pill" 
+                        [ngClass]="res.estado === 'CANCELADA' ? 'bg-danger-subtle text-danger border border-danger' : 'bg-success-subtle text-success border border-success'">
+                    {{ res.estado || 'CONFIRMADA' }}
                   </span>
                 </td>
-                <td class="fw-bold text-success">
+
+                <td class="fw-bold text-dark">
                   {{ res.montoTotal | currency:'USD':'symbol':'1.0-0' }}
                 </td>
-                <td class="text-center">
-                <button class="btn btn-outline-primary btn-sm me-2" [routerLink]="['/reservas/detalle', res.id]" title="Ver todos los datos">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-outline-danger btn-sm" (click)="cancelarReserva(res)" title="Cancelar Reserva" [disabled]="res.estado === 'CANCELADA'">
-                  <i class="bi bi-x-circle"></i>
-                </button>
-              </td>
+                
+                <td class="text-center pe-4">
+                  <div class="btn-group">
+                    <button class="btn btn-outline-info btn-sm" [routerLink]="['/reservas/detalle', res.id]" title="Ver Detalle">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="cancelarReserva(res)" title="Cancelar" [disabled]="res.estado === 'CANCELADA'">
+                      <i class="bi bi-x-circle"></i>
+                    </button>
+                  </div>
+                </td>
               </tr>
             } @empty {
               @if (!loading) {
                 <tr>
-                  <td colspan="5" class="text-center py-5 text-muted">
-                    <i class="bi bi-calendar-x fs-1 d-block mb-2 opacity-50"></i>
-                    No hay reservas registradas.
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="bi bi-search fs-1 opacity-50"></i>
+                    <p class="mb-0">No se encontraron reservas.</p>
                   </td>
                 </tr>
               }

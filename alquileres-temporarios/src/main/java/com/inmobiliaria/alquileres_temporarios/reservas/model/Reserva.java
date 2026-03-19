@@ -1,6 +1,7 @@
 package com.inmobiliaria.alquileres_temporarios.reservas.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -91,12 +92,11 @@ public class Reserva implements BloqueoCalendario {
 
     public void calcularCostos() {
         long noches = ChronoUnit.DAYS.between(fechaInicio, fechaFin);
-        
-        BigDecimal precioPorNoche = BigDecimal.valueOf(propiedad.getPrecioPorNoche());
+        BigDecimal precioPorNoche = propiedad.getPrecioPorNoche();
         this.montoTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
-        
-        BigDecimal porcentajeDepo = BigDecimal.valueOf(propiedad.getPorcentajeDeposito())
-                                              .divide(BigDecimal.valueOf(100));
+        BigDecimal porcentajeDepo = propiedad.getPorcentajeDeposito()
+                .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                
         this.depositoRetenido = this.montoTotal.multiply(porcentajeDepo);
         
         this.comisionInmobiliaria = propiedad.getPropietario().calcularComision(this.montoTotal);

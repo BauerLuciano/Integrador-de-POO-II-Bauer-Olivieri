@@ -1,5 +1,6 @@
 package com.inmobiliaria.alquileres_temporarios.propiedades.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class Propiedad {
     private Long id;
 
     private String direccion;
-    private Double precioPorNoche;
-    private Double porcentajeDeposito;
+    private BigDecimal precioPorNoche;
+    private BigDecimal porcentajeDeposito;
     
     @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "propietario_id")

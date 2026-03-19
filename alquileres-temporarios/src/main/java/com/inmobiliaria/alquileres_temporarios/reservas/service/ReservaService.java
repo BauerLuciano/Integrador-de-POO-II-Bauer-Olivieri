@@ -68,7 +68,9 @@ public class ReservaService {
         return reservaRepo.save(reserva);
     }
 
-    public List<Reserva> obtenerTodas() { return reservaRepo.findAll(); }
+    public List<Reserva> obtenerTodas() { 
+        return reservaRepo.findAllOptimizadas(); 
+    }
 
     public Reserva obtenerPorId(Long id) {
         return reservaRepo.findById(id).orElseThrow(() -> new RuntimeException("Reserva no encontrada"));

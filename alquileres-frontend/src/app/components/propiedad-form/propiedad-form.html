@@ -36,6 +36,14 @@
             <input type="number" formControlName="porcentajeDeposito" class="form-control">
           </div>
 
+          <div class="col-md-4 mb-3">
+            <label class="form-label small fw-bold">Estado de la Propiedad</label>
+            <select formControlName="estado" class="form-select border-warning shadow-sm">
+              <option value="Disponible">🟢 Disponible</option>
+              <option value="Alquilada">🔴 Alquilada</option>
+              <option value="Mantenimiento">🟡 En Mantenimiento</option>
+            </select>
+          </div>
           <div class="col-12 mt-4 mb-3">
             <h6 class="text-muted border-bottom pb-2"><i class="bi bi-shield-check me-2"></i>Política de Cancelación</h6>
           </div>
