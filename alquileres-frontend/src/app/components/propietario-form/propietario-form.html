@@ -17,8 +17,12 @@
               <div class="col-md-5">
                 <label class="form-label fw-bold small">DNI</label>
                 <input type="text" formControlName="dni" class="form-control form-control-sm" 
-                       placeholder="Ej: 38123456"
+                       placeholder="Ej: 38123456" maxlength="8"
+                       (input)="permitirSoloNumeros($event, 'dni')"
                        [class.is-invalid]="propietarioForm.get('dni')?.touched && propietarioForm.get('dni')?.invalid">
+                @if (propietarioForm.get('dni')?.touched && propietarioForm.get('dni')?.invalid) {
+                  <div class="invalid-feedback">Ingrese un DNI válido (solo números).</div>
+                }
               </div>
             </div>
 
@@ -26,8 +30,13 @@
               <div class="col-12">
                 <label class="form-label fw-bold small">Nombre</label>
                 <input type="text" formControlName="nombre" class="form-control form-control-sm"
-                       placeholder="Ingresa el nombre"
+                       placeholder="Ingresa el nombre" maxlength="50"
+                       (input)="permitirSoloLetras($event, 'nombre')"
                        [class.is-invalid]="propietarioForm.get('nombre')?.touched && propietarioForm.get('nombre')?.invalid">
+                @if (propietarioForm.get('nombre')?.touched) {
+                  @if (propietarioForm.get('nombre')?.hasError('required')) { <div class="invalid-feedback">El nombre es obligatorio.</div> }
+                  @if (propietarioForm.get('nombre')?.hasError('pattern')) { <div class="invalid-feedback">No se permiten números ni símbolos.</div> }
+                }
               </div>
             </div>
 
@@ -35,8 +44,13 @@
               <div class="col-12">
                 <label class="form-label fw-bold small">Apellido</label>
                 <input type="text" formControlName="apellido" class="form-control form-control-sm"
-                       placeholder="Ingresa el apellido"
+                       placeholder="Ingresa el apellido" maxlength="50"
+                       (input)="permitirSoloLetras($event, 'apellido')"
                        [class.is-invalid]="propietarioForm.get('apellido')?.touched && propietarioForm.get('apellido')?.invalid">
+                @if (propietarioForm.get('apellido')?.touched) {
+                  @if (propietarioForm.get('apellido')?.hasError('required')) { <div class="invalid-feedback">El apellido es obligatorio.</div> }
+                  @if (propietarioForm.get('apellido')?.hasError('pattern')) { <div class="invalid-feedback">No se permiten números ni símbolos.</div> }
+                }
               </div>
             </div>
 
@@ -47,7 +61,10 @@
                   <span class="input-group-text"><i class="bi bi-envelope small"></i></span>
                   <input type="email" formControlName="email" class="form-control"
                          [class.is-invalid]="propietarioForm.get('email')?.touched && propietarioForm.get('email')?.invalid"
-                         placeholder="ejemplo@correo.com">
+                         placeholder="ejemplo@correo.com" maxlength="100">
+                  @if (propietarioForm.get('email')?.touched && propietarioForm.get('email')?.invalid) {
+                    <div class="invalid-feedback">Ingrese un correo válido.</div>
+                  }
                 </div>
               </div>
             </div>
@@ -57,9 +74,15 @@
                 <label class="form-label fw-bold small">Teléfono</label>
                 <div class="input-group input-group-sm">
                   <span class="input-group-text"><i class="bi bi-telephone small"></i></span>
+                  
                   <input type="text" formControlName="telefono" class="form-control"
-                         [class.is-invalid]="propietarioForm.get('telefono')?.touched && propietarioForm.get('telefono')?.invalid"
-                         placeholder="+54 9...">
+                         placeholder="+54 9..." maxlength="15"
+                         (input)="permitirSoloTelefono($event, 'telefono')"
+                         [class.is-invalid]="propietarioForm.get('telefono')?.touched && propietarioForm.get('telefono')?.invalid">
+                  
+                  @if (propietarioForm.get('telefono')?.touched && propietarioForm.get('telefono')?.invalid) {
+                    <div class="invalid-feedback">Ingrese un número de teléfono válido.</div>
+                  }
                 </div>
               </div>
             </div>

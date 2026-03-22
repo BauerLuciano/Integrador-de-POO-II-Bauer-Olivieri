@@ -98,4 +98,9 @@ public class ReservaController {
             return ResponseEntity.badRequest().body(e.getMessage()); 
         }
     }
+
+    @GetMapping("/{id}/saldo")
+    public ResponseEntity<java.math.BigDecimal> obtenerSaldo(@PathVariable Long id) {
+        return ResponseEntity.ok(service.consultarSaldo(id));
+    }
 }

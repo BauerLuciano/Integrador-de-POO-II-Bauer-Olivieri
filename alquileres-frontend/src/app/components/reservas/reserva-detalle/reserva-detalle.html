@@ -28,11 +28,11 @@
             
             <div class="row mb-4">
               <div class="col-sm-6">
-                <h6 class="text-muted mb-1 small fw-bold">INQUILINO</h6>
-                <p class="fw-bold fs-5 text-dark"><i class="bi bi-person me-1"></i> {{ reserva.inquilino }}</p>
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Inquilino</h6>
+                <p class="fw-bold fs-5 text-dark"><i class="bi bi-person me-1 text-primary"></i> {{ reserva.inquilino }}</p>
               </div>
               <div class="col-sm-6 text-sm-end">
-                <h6 class="text-muted mb-1 small fw-bold">PROPIEDAD</h6>
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Propiedad</h6>
                 <p class="fw-bold text-dark"><i class="bi bi-house me-1"></i> {{ reserva.propiedad?.direccion }}</p>
                 <p class="small text-muted" style="margin-top: -10px;">
                   Dueño: {{ reserva.propiedad?.propietario?.nombre }} {{ reserva.propiedad?.propietario?.apellido }}
@@ -57,23 +57,20 @@
                   <i class="bi bi-x-octagon-fill me-2"></i>Detalles de la Cancelación
                 </h6>
                 <hr class="border-danger opacity-25 my-2">
-                
                 <div class="row g-2">
                   <div class="col-12">
-                    <p class="mb-0 small text-muted text-uppercase fw-bold">Motivo principal</p>
+                    <p class="mb-0 small text-muted text-uppercase fw-bold text-dark">Motivo principal</p>
                     <p class="mb-2 fw-medium text-dark">{{ reserva.motivoCancelacion || 'No especificado' }}</p>
                   </div>
-                  
                   @if (reserva.detalleCancelacion) {
                     <div class="col-12">
-                      <p class="mb-0 small text-muted text-uppercase fw-bold">Comentarios adicionales</p>
+                      <p class="mb-0 small text-muted text-uppercase fw-bold text-dark">Comentarios adicionales</p>
                       <p class="mb-2 text-dark">{{ reserva.detalleCancelacion }}</p>
                     </div>
                   }
                 </div>
-                
                 @if (reserva.montoPenalidad > 0) {
-                  <div class="mt-2 p-2 bg-white rounded border border-danger-subtle">
+                  <div class="mt-2 p-2 bg-white rounded border border-danger-subtle text-center">
                     <p class="mb-0 text-danger fw-bold small">
                       <i class="bi bi-info-circle-fill me-1"></i> 
                       Penalidad retenida al inquilino: {{ reserva.montoPenalidad | currency:'USD':'symbol':'1.0-0' }}
@@ -83,7 +80,7 @@
               </div>
             }
 
-            <h6 class="border-bottom pb-2 mb-3 fw-bold text-muted"><i class="bi bi-cash-stack me-2"></i>Desglose Financiero</h6>
+            <h6 class="border-bottom pb-2 mb-3 fw-bold text-muted"><i class="bi bi-cash-stack me-2 text-primary"></i>Desglose Financiero</h6>
             
             <div class="d-flex justify-content-between mb-2">
               <span class="text-secondary">Depósito en Garantía (Retenido):</span>
@@ -95,10 +92,24 @@
               <span class="fw-bold">+ {{ reserva.comisionInmobiliaria | currency:'USD':'symbol':'1.0-0' }}</span>
             </div>
 
-            <div class="d-flex justify-content-between p-2 bg-light rounded border">
+            <div class="d-flex justify-content-between p-2 bg-light rounded border mb-2">
               <span class="fw-bold text-dark fs-5">Total Estancia:</span>
               <span class="fw-bold text-dark fs-5">{{ reserva.montoTotal | currency:'USD':'symbol':'1.0-0' }}</span>
             </div>
+
+            @if (reserva.estado !== 'CANCELADA') {
+              <div class="d-flex justify-content-between p-2 rounded border shadow-sm" 
+                   [ngClass]="saldoPendiente === 0 ? 'bg-success text-white border-success' : 'bg-warning-subtle border-warning'">
+                
+                @if (saldoPendiente === 0) {
+                  <span class="fw-bold fs-6"><i class="bi bi-check-circle-fill me-2"></i>ESTADO DEL PAGO:</span>
+                  <span class="fw-bold fs-6 text-uppercase">¡Pagado totalmente!</span>
+                } @else {
+                  <span class="fw-bold fs-6 text-dark">Saldo Pendiente a Cobrar:</span>
+                  <span class="fw-bold fs-6 text-dark">{{ saldoPendiente | currency:'USD':'symbol':'1.0-0' }}</span>
+                }
+              </div>
+            }
 
             <hr class="my-4">
             
@@ -106,12 +117,85 @@
               <button class="btn btn-outline-secondary btn-sm px-3" routerLink="/reservas">
                 <i class="bi bi-arrow-left me-1"></i> Volver
               </button>
-              <button class="btn btn-primary btn-sm px-4 shadow-sm" (click)="imprimirTicket()">
-                <i class="bi bi-printer me-1"></i> Imprimir Comprobante
-              </button>
+              
+              <div class="d-flex gap-2">
+                @if (reserva.estado !== 'CANCELADA' && saldoPendiente > 0) {
+                  <button class="btn btn-success btn-sm px-3 shadow-sm fw-bold" (click)="abrirModalPago()">
+                    <i class="bi bi-currency-dollar me-1"></i> Registrar Pago
+                  </button>
+                }
+                <button class="btn btn-primary btn-sm px-3 shadow-sm" (click)="imprimirTicket()">
+                  <i class="bi bi-printer me-1"></i> Imprimir
+                </button>
+              </div>
             </div>
 
           </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (mostrarModalPago) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+          
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title fw-bold"><i class="bi bi-cash-coin me-2"></i>Registrar Pago</h5>
+            <button type="button" class="btn-close btn-close-white" (click)="cerrarModalPago()"></button>
+          </div>
+          
+          <div class="modal-body p-4">
+            <div class="alert alert-success border-success-subtle py-2 d-flex justify-content-between align-items-center">
+              <span class="fw-bold small text-success text-uppercase">Deuda Actual:</span>
+              <span class="fw-bolder fs-5 text-success">{{ saldoPendiente | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <form [formGroup]="pagoForm" (ngSubmit)="guardarPago()">
+              
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Tipo de Pago</label>
+                <select formControlName="tipo" class="form-select shadow-sm">
+                  <option value="SENIA">Seña / Anticipo</option>
+                  <option value="PARCIAL">Pago Parcial</option>
+                  <option value="SALDO">Saldo Final</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase">Monto a Cobrar</label>
+                <div class="input-group shadow-sm">
+                  <span class="input-group-text bg-light text-success fw-bold">$</span>
+                  <input type="number" formControlName="monto" class="form-control fw-bold" placeholder="0.00">
+                </div>
+                @if (montoExcedeDeuda) {
+                  <small class="text-danger fw-bold d-block mt-1">
+                    <i class="bi bi-exclamation-triangle"></i> El monto supera la deuda.
+                  </small>
+                }
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label small fw-bold text-muted text-uppercase">Fecha del Pago</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-calendar-event"></i></span>
+                    <input type="date" formControlName="fechaPago" class="form-control bg-light text-muted" style="cursor: not-allowed;">
+                </div>
+                <small class="text-muted x-small">No se puede modificar. Registra el ingreso al día de hoy.</small>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light border fw-bold" (click)="cerrarModalPago()">Cancelar</button>
+                <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm" 
+                        [disabled]="pagoForm.invalid || montoExcedeDeuda">
+                  Confirmar Ingreso
+                </button>
+              </div>
+              
+            </form>
+          </div>
+          
         </div>
       </div>
     </div>

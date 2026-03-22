@@ -10,39 +10,55 @@
           
           <div class="col-md-6 mb-3">
             <label class="form-label small fw-bold">Dirección</label>
-            <input type="text" formControlName="direccion" class="form-control">
+            <input type="text" formControlName="direccion" class="form-control" maxlength="150"
+                   [class.is-invalid]="form.get('direccion')?.touched && form.get('direccion')?.invalid">
+            <div class="invalid-feedback">La dirección es obligatoria.</div>
           </div>
           
           <div class="col-md-6 mb-3">
             <label class="form-label small fw-bold">Propietario</label>
-            <select formControlName="propietario" class="form-select" [compareWith]="compararPropietarios">
+            <select formControlName="propietario" class="form-select" [compareWith]="compararPropietarios"
+                    [class.is-invalid]="form.get('propietario')?.touched && form.get('propietario')?.invalid">
               <option [ngValue]="null">Seleccione un dueño...</option>
               @for (p of propietarios; track p.id) {
                 <option [ngValue]="p">{{ p.nombre }} {{ p.apellido }} (DNI: {{ p.dni }})</option>
               }
             </select>
+             <div class="invalid-feedback">Debe asignar un propietario.</div>
           </div>
           
           <div class="col-md-4 mb-3">
             <label class="form-label small fw-bold">Precio por Noche</label>
             <div class="input-group">
               <span class="input-group-text">$</span>
-              <input type="number" formControlName="precioPorNoche" class="form-control">
+              <input type="number" formControlName="precioPorNoche" class="form-control"
+                     [class.is-invalid]="form.get('precioPorNoche')?.touched && form.get('precioPorNoche')?.invalid">
+              <div class="invalid-feedback">Ingrese un valor mayor a cero.</div>
             </div>
           </div>
           
           <div class="col-md-4 mb-3">
             <label class="form-label small fw-bold">Depósito (%)</label>
-            <input type="number" formControlName="porcentajeDeposito" class="form-control">
+            <input type="number" formControlName="porcentajeDeposito" class="form-control"
+                   [class.is-invalid]="form.get('porcentajeDeposito')?.touched && form.get('porcentajeDeposito')?.invalid">
+            <div class="invalid-feedback">Debe ser un valor entre 0 y 100.</div>
           </div>
 
           <div class="col-md-4 mb-3">
             <label class="form-label small fw-bold">Estado de la Propiedad</label>
             <select formControlName="estado" class="form-select border-warning shadow-sm">
-              <option value="Disponible">🟢 Disponible</option>
-              <option value="Alquilada">🔴 Alquilada</option>
-              <option value="Mantenimiento">🟡 En Mantenimiento</option>
+              <option value="Disponible">Disponible</option>
+              <option value="Alquilada">Alquilada</option>
+              
+              <option value="Mantenimiento" [disabled]="estadoOriginal === 'Alquilada'">En Mantenimiento</option>
+              <option value="Inactiva" [disabled]="estadoOriginal === 'Alquilada'">Inactiva</option>
             </select>
+            
+            @if (estadoOriginal === 'Alquilada') {
+              <div class="form-text text-danger small mt-1">
+                <i class="bi bi-lock-fill"></i> No se puede desactivar porque está alquilada.
+              </div>
+            }
           </div>
           <div class="col-12 mt-4 mb-3">
             <h6 class="text-muted border-bottom pb-2"><i class="bi bi-shield-check me-2"></i>Política de Cancelación</h6>
@@ -102,18 +118,21 @@
         <form [formGroup]="gastoForm" (ngSubmit)="guardarGasto()" class="row g-2 align-items-end mb-4 bg-light p-3 rounded border mx-0">
           <div class="col-md-5">
             <label class="form-label small fw-bold text-muted">Concepto (Ej: Plomero)</label>
-            <input type="text" formControlName="concepto" class="form-control form-control-sm" placeholder="Detalle del arreglo...">
+            <input type="text" formControlName="concepto" class="form-control form-control-sm" placeholder="Detalle del arreglo..."
+                   [class.is-invalid]="gastoForm.get('concepto')?.touched && gastoForm.get('concepto')?.invalid">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold text-muted">Monto</label>
             <div class="input-group input-group-sm">
               <span class="input-group-text">$</span>
-              <input type="number" formControlName="monto" class="form-control">
+              <input type="number" formControlName="monto" class="form-control"
+                     [class.is-invalid]="gastoForm.get('monto')?.touched && gastoForm.get('monto')?.invalid">
             </div>
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold text-muted">Fecha</label>
-            <input type="date" formControlName="fecha" class="form-control form-control-sm">
+            <input type="date" formControlName="fecha" class="form-control form-control-sm"
+                   [class.is-invalid]="gastoForm.get('fecha')?.touched && gastoForm.get('fecha')?.invalid">
           </div>
           <div class="col-md-1 text-end">
             <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold shadow-sm" [disabled]="gastoForm.invalid" title="Agregar Gasto">

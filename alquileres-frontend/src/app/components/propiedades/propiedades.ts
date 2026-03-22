@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { PropiedadService } from '../../services/propiedad';
 import { Propiedad } from '../../models/propiedad';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-propiedades',
@@ -18,11 +19,11 @@ export class PropiedadesComponent implements OnInit {
   listaPropiedades: Propiedad[] = [];  
   loading: boolean = true;
 
-  // VARIABLES PARA LOS FILTROS 
   filtroTexto: string = '';
   filtroEstado: string = '';
 
   private propiedadService = inject(PropiedadService);
+  private alertService = inject(AlertService);
 
   ngOnInit(): void {
     this.cargarPropiedades();
@@ -43,18 +44,14 @@ export class PropiedadesComponent implements OnInit {
     });
   }
 
-  // LÓGICA DE FILTRADO 
   filtrarPropiedades(): void {
     this.listaPropiedades = this.todasLasPropiedades.filter(p => {
-      
-      // 1. Chequeamos el texto
       const termino = this.filtroTexto.toLowerCase();
       const coincideTexto = !termino || 
         p.direccion.toLowerCase().includes(termino) ||
         (p.propietario?.nombre?.toLowerCase() || '').includes(termino) ||
         (p.propietario?.apellido?.toLowerCase() || '').includes(termino);
 
-      // 2. Chequeamos el estado
       const coincideEstado = !this.filtroEstado || p.estado === this.filtroEstado;
       return coincideTexto && coincideEstado;
     });
@@ -63,18 +60,57 @@ export class PropiedadesComponent implements OnInit {
   eliminar(id: number | undefined) {
     if (!id) return;
 
-    if (confirm('¿Estás seguro de que querés eliminar esta propiedad?')) {
-      this.propiedadService.eliminarPropiedad(id).subscribe({
-        next: () => {
-          this.todasLasPropiedades = this.todasLasPropiedades.filter(p => p.id !== id);
-          this.filtrarPropiedades(); 
-          alert('Propiedad eliminada con éxito');
-        },
-        error: (err) => {
-          console.error('Error al eliminar:', err);
-          alert('No se pudo eliminar la propiedad. Quizás tenga reservas asociadas.');
-        }
-      });
-    }
+    this.alertService.confirmar(
+      '¿Dar de baja propiedad?', 
+      'La propiedad dejará de estar disponible y pasará a estado Inactiva.', 
+      'Sí, dar de baja'
+    ).then((result) => {
+      if (result.isConfirmed) {
+        this.propiedadService.eliminarPropiedad(id).subscribe({
+          next: () => {
+            const index = this.todasLasPropiedades.findIndex(p => p.id === id);
+            if (index !== -1) {
+              this.todasLasPropiedades[index].estado = 'Inactiva';
+              this.filtrarPropiedades();
+            }
+            this.alertService.exito('¡Dada de baja!', 'La propiedad fue marcada como Inactiva con éxito.');
+          },
+          error: (err) => {
+            console.error('Error al dar de baja:', err);
+            this.alertService.error('Error', 'No se pudo desactivar la propiedad. Verificá tu conexión.');
+          }
+        });
+      }
+    });
+  }
+
+  reactivar(propiedad: Propiedad) {
+    if (!propiedad.id) return;
+
+    const idPropiedad = propiedad.id; 
+
+    this.alertService.confirmar(
+      '¿Reactivar propiedad?', 
+      'La propiedad volverá a estar "Disponible" para recibir reservas.', 
+      'Sí, reactivar'
+    ).then((result) => {
+      if (result.isConfirmed) {
+        const propReactivada = { ...propiedad, estado: 'Disponible' };
+        this.propiedadService.actualizarPropiedad(idPropiedad, propReactivada).subscribe({
+          next: () => {
+            const index = this.todasLasPropiedades.findIndex(p => p.id === idPropiedad);
+            if (index !== -1) {
+              this.todasLasPropiedades[index].estado = 'Disponible';
+              this.filtrarPropiedades();
+            }
+            this.alertService.exito('¡Reactivada!', 'La propiedad ya está disponible en el catálogo.');
+          },
+          error: (err) => {
+            console.error('Error al reactivar:', err);
+            this.alertService.error('Error', 'No se pudo reactivar la propiedad.');
+          }
+        });
+      }
+    });
   }
 }

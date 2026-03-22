@@ -1,194 +1,182 @@
-<div class="container-fluid pt-2 pb-5">
-  <h2 class="fw-bold mb-4 text-dark text-uppercase"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reportes y Estadísticas</h2>
+<div class="container-fluid pt-3 pb-5 px-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark text-uppercase m-0">
+      <i class="bi bi-graph-up-arrow text-primary me-2"></i>Reportes y Estadísticas
+    </h2>
+  </div>
 
-  <div class="card shadow-sm border-0 mb-4 bg-light border-start border-primary border-4">
-    <div class="card-body">
+  <div class="card shadow-sm border-0 mb-4 filter-section">
+    <div class="card-body p-4">
       <div class="row align-items-end g-3">
+        
         <div class="col-md-3">
-          <label class="small fw-bold text-muted">PROPIETARIO:</label>
-          <select class="form-select" [(ngModel)]="idPropietarioSel">
-            <option [value]="0" disabled>Seleccione un dueño...</option>
-            @for (p of propietarios; track p.id) {
-              <option [value]="p.id">{{ p.apellido }}, {{ p.nombre }}</option>
-            }
-          </select>
+          <label class="form-label small fw-bolder text-primary text-uppercase">Propietario</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-person-circle"></i></span>
+            <select class="form-select border-start-0" [(ngModel)]="idPropietarioSel">
+              <option [value]="0" disabled>Seleccioná un dueño...</option>
+              @for (p of propietarios; track p.id) {
+                <option [value]="p.id">{{ p.apellido }}, {{ p.nombre }}</option>
+              }
+            </select>
+          </div>
         </div>
         
-        <div class="col-md-2 border-start">
-          <label class="small fw-bold text-muted">MES (Liquidación):</label>
-          <input type="month" class="form-control" [(ngModel)]="periodoSeleccionado">
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-outline-dark w-100 shadow-sm fw-bold" (click)="consultar()">
-            <i class="bi bi-receipt me-2"></i> LIQUIDAR
-          </button>
-        </div>
-
-        <div class="col-md-2 border-start">
-          <label class="small fw-bold text-muted">DESDE:</label>
-          <input type="date" class="form-control" [(ngModel)]="fechaInicioEstadistica">
-        </div>
-        <div class="col-md-2">
-          <label class="small fw-bold text-muted">HASTA:</label>
-          <input type="date" class="form-control" [(ngModel)]="fechaFinEstadistica">
-        </div>
-        <div class="col-md-1">
-          <button class="btn btn-dark w-100 shadow-sm fw-bold" (click)="consultarEstadisticas()" title="Ver Estadísticas">
-            <i class="bi bi-bar-chart-fill"></i>
-          </button>
+        <div class="col-md-3 border-start ps-4">
+          <label class="form-label small fw-bolder text-muted text-uppercase">Liquidación Mensual</label>
+          <div class="d-flex gap-2">
+            <input type="month" class="form-control" [(ngModel)]="periodoSeleccionado">
+            <button class="btn btn-primary shadow-sm fw-bold px-3" (click)="consultar()" [disabled]="idPropietarioSel === 0">
+              <i class="bi bi-receipt"></i>
+            </button>
+          </div>
         </div>
 
+        <div class="col-md-6 border-start ps-4">
+          <label class="form-label small fw-bolder text-muted text-uppercase">Estadísticas por Período</label>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="date" class="form-control" [(ngModel)]="fechaInicioEstadistica">
+            <span class="text-muted">a</span>
+            <input type="date" class="form-control" [(ngModel)]="fechaFinEstadistica">
+            <button class="btn btn-dark shadow-sm fw-bold px-3" (click)="consultarEstadisticas()" [disabled]="idPropietarioSel === 0">
+              <i class="bi bi-bar-chart-fill"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <hr class="my-4">
-
   @if (mostrarEstadisticas && datosEstadistica) {
-    <div class="row g-3 mb-4">
+    <div class="row g-4 animate-fade-in mb-5">
       <div class="col-md-6">
-        <div class="card h-100 border-0 shadow-sm text-center">
-          <div class="card-header bg-secondary text-white fw-bold py-2">Total Reservas Concretadas</div>
-          <div class="card-body d-flex align-items-center justify-content-center">
-             <h2 class="fw-bold mb-0 display-4 text-primary">{{ datosEstadistica.cantidadReservas }}</h2>
-          </div>
+        <div class="card h-100 border-0 shadow-sm kpi-card bg-white text-center p-4">
+          <i class="bi bi-calendar-check text-primary fs-1 mb-2"></i>
+          <h6 class="text-uppercase text-muted fw-bold">Reservas Concretadas</h6>
+          <h1 class="display-3 fw-bold text-dark mb-0">{{ datosEstadistica.cantidadReservas }}</h1>
         </div>
       </div>
-
       <div class="col-md-6">
-        <div class="card h-100 border-0 shadow-sm text-center bg-success text-white border-3">
-          <div class="card-header bg-success fw-bold py-2 border-0">INGRESOS GENERADOS</div>
-          <div class="card-body d-flex align-items-center justify-content-center">
-            <h2 class="fw-bold mb-0 display-4">{{ datosEstadistica.ingresosTotales | currency:'USD':'symbol':'1.0-0' }}</h2>
-          </div>
+        <div class="card h-100 border-0 shadow-sm kpi-card bg-success text-white text-center p-4">
+          <i class="bi bi-cash-coin fs-1 mb-2 text-white-50"></i>
+          <h6 class="text-uppercase fw-bold opacity-75">Ingresos Generados (Bruto)</h6>
+          <h1 class="display-3 fw-bold mb-0">{{ datosEstadistica.ingresosTotales | currency:'USD':'symbol':'1.0-0' }}</h1>
         </div>
       </div>
     </div>
   }
 
   @if (datos && !mostrarEstadisticas) {
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 animate-fade-in">
       <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm text-center">
-          <div class="card-header bg-secondary text-white fw-bold py-1">Ingresos Brutos</div>
-          <div class="card-body">
-            <p class="mb-1 small">Estadías: <strong>{{ datos.ingresosEstadias | currency:'USD':'symbol':'1.0-0' }}</strong></p>
-            <p class="mb-1 small">Penalidades: <strong>{{ datos.ingresosPenalidades | currency:'USD':'symbol':'1.0-0' }}</strong></p>
-            <hr class="my-2">
-            <h5 class="fw-bold mb-0">TOTAL: {{ datos.totalIngresosBrutos | currency:'USD':'symbol':'1.0-0' }}</h5>
+        <div class="card h-100 shadow-sm kpi-card card-bruto">
+          <div class="card-header bg-white border-0 py-2 small fw-bold text-muted">INGRESOS BRUTOS</div>
+          <div class="card-body py-2">
+            <div class="d-flex justify-content-between x-small mb-1">
+              <span>Estadías:</span><span class="fw-bold">{{ datos.ingresosEstadias | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="d-flex justify-content-between x-small mb-1 text-primary">
+              <span>Penalidades:</span><span class="fw-bold">+{{ datos.ingresosPenalidades | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="kpi-value text-dark border-top mt-2 pt-1">{{ datos.totalIngresosBrutos | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm text-center">
-          <div class="card-header bg-secondary text-white fw-bold py-1">Comisión Agencia</div>
+        <div class="card h-100 shadow-sm kpi-card card-comision">
+          <div class="card-header bg-white border-0 py-2 small fw-bold text-muted">COMISIÓN AGENCIA</div>
           <div class="card-body d-flex flex-column justify-content-center">
-            <p class="mb-1 text-muted">Comisión 20%</p>
-            <h5 class="fw-bold text-danger mb-0">- {{ datos.comisionAgencia | currency:'USD':'symbol':'1.0-0' }}</h5>
+            <p class="mb-0 text-muted small">Retención 20%</p>
+            <div class="kpi-value text-danger">- {{ datos.comisionAgencia | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm text-center">
-          <div class="card-header bg-secondary text-white fw-bold py-1">Gastos Mantenimiento</div>
+        <div class="card h-100 shadow-sm kpi-card card-gastos">
+          <div class="card-header bg-white border-0 py-2 small fw-bold text-muted">GASTOS MANTENIMIENTO</div>
           <div class="card-body">
-             @for (g of datos.detalleGastos; track $index) {
-                <p class="mb-0 x-small text-muted">{{ g.motivo }}</p>
-             }
-            <hr class="my-2">
-            <h5 class="fw-bold text-danger mb-0">- {{ datos.gastosMantenimiento | currency:'USD':'symbol':'1.0-0' }}</h5>
+            <div class="overflow-auto" style="max-height: 40px;">
+              @for (g of datos.detalleGastos; track $index) {
+                <div class="x-small text-muted text-truncate">• {{ g.motivo }}</div>
+              }
+            </div>
+            <div class="kpi-value text-danger border-top mt-2 pt-1">- {{ datos.gastosMantenimiento | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
       </div>
 
       <div class="col-md-3">
-        <div class="card h-100 border-0 shadow-sm text-center bg-primary text-white border-3">
-          <div class="card-header bg-primary-dark fw-bold py-2 border-0">TOTAL A LIQUIDAR</div>
+        <div class="card h-100 shadow-lg kpi-card card-neto">
+          <div class="card-header bg-transparent border-0 py-2 small">NETO A PAGAR AL DUEÑO</div>
           <div class="card-body d-flex align-items-center justify-content-center">
-            <h2 class="fw-bold mb-0 display-6">{{ datos.totalALiquidar | currency:'USD':'symbol':'1.0-0' }}</h2>
+            <div class="kpi-value display-6 fw-bold">{{ datos.totalALiquidar | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-header bg-white py-3 border-bottom">
-        <h6 class="mb-0 fw-bold"><i class="bi bi-calendar-check me-2"></i>Ingresos por Reservas</h6>
-      </div>
+    <div class="card border-0 shadow-sm mb-4 animate-fade-in">
+      <div class="card-header bg-white py-3 border-bottom"><h6 class="mb-0 fw-bold">Detalle de Estadías</h6></div>
       <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light small text-muted">
-            <tr>
-              <th>FECHA</th><th>PROPIEDAD</th><th>INQUILINO</th><th>NOCHES</th><th>MONTO</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (res of datos.detalleReservas; track $index) {
-              <tr>
-                <td>{{ res.fecha }}</td>
-                <td>{{ res.propiedad }}</td>
-                <td>{{ res.inquilino }}</td>
-                <td>{{ res.noches }}</td>
-                <td class="fw-bold text-primary">{{ res.monto | currency:'USD':'symbol':'1.0-0' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 table-detail">
+            <thead>
+              <tr><th class="ps-4">Fecha</th><th>Propiedad</th><th>Inquilino</th><th class="text-center">Noches</th><th class="text-end pe-4">Monto</th></tr>
+            </thead>
+            <tbody>
+              @for (res of datos.detalleReservas; track $index) {
+                <tr>
+                  <td class="ps-4">{{ res.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ res.propiedad }}</td>
+                  <td>{{ res.inquilino }}</td>
+                  <td class="text-center"><span class="badge bg-light text-dark border">{{ res.noches }} noches</span></td>
+                  <td class="text-end pe-4 fw-bold text-primary">{{ res.monto | currency:'USD':'symbol':'1.0-0' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <div class="d-flex justify-content-end gap-3">
-      <button class="btn btn-outline-dark" (click)="descargarPDF()">
-        <i class="bi bi-file-pdf me-2"></i>Exportar a PDF
-      </button>
-      <button class="btn btn-primary px-4 shadow" (click)="confirmarLiquidacion()">
-        Liquidar y marcar como pagado
-      </button>
-    </div>
-  } 
-
-  @if (!datos && !mostrarEstadisticas && historialPagos.length === 0) {
-    <div class="text-center py-5">
-      <div class="display-1 text-muted opacity-25 mb-3">
-        <i class="bi bi-clipboard-data"></i>
-      </div>
-      <h4 class="text-muted">No hay datos para mostrar</h4>
-      <p class="text-secondary">Seleccioná un propietario y generá un reporte o estadística.</p>
+    <div class="d-flex justify-content-end gap-3 mb-5 animate-fade-in">
+      <button class="btn btn-outline-danger fw-bold" (click)="descargarPDF()"><i class="bi bi-file-pdf-fill me-2"></i>PDF</button>
+      <button class="btn btn-success px-4 shadow fw-bold" (click)="confirmarLiquidacion()"><i class="bi bi-check-all me-2"></i>PAGAR</button>
     </div>
   }
 
   @if (historialPagos.length > 0 && !mostrarEstadisticas) {
-    <hr class="my-5">
-    <h5 class="fw-bold mb-3 text-success"><i class="bi bi-check-circle-fill me-2"></i>Historial de Liquidaciones Pagadas</h5>
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body p-0">
-        <table class="table table-striped align-middle mb-0">
-          <thead class="bg-success text-white small">
-            <tr>
-              <th>Nº LIQUIDACIÓN</th>
-              <th>FECHA EMISIÓN</th>
-              <th>PERÍODO (Mes/Año)</th>
-              <th>BRUTO</th>
-              <th>COMISIONES</th>
-              <th>NETO PAGADO</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (pago of historialPagos; track pago.id) {
-              <tr>
-                <td class="fw-bold">#{{ pago.id }}</td>
-                <td>{{ pago.fechaEmision }}</td>
-                <td>{{ pago.mes }} / {{ pago.anio }}</td>
-                <td>{{ pago.totalBruto | currency:'USD':'symbol':'1.0-0' }}</td>
-                <td class="text-danger">-{{ pago.totalComisiones | currency:'USD':'symbol':'1.0-0' }}</td>
-                <td class="fw-bold text-success">{{ pago.netoAPagar | currency:'USD':'symbol':'1.0-0' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    <div class="animate-fade-in mt-5">
+      <h5 class="fw-bold mb-3 text-success"><i class="bi bi-clock-history me-2"></i>Historial</h5>
+      <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle mb-0 table-history">
+            <thead>
+              <tr><th class="ps-4">ID</th><th>EMISIÓN</th><th>PERÍODO</th><th>BRUTO</th><th>GASTOS</th><th class="pe-4">NETO</th></tr>
+            </thead>
+            <tbody>
+              @for (pago of historialPagos; track pago.id) {
+                <tr>
+                  <td class="ps-4 fw-bold text-primary">#{{ pago.id }}</td>
+                  <td>{{ pago.fechaEmision | date:'dd/MM/yy' }}</td>
+                  <td>{{ pago.mes }}/{{ pago.anio }}</td>
+                  <td>{{ pago.totalBruto | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="text-danger">-{{ pago.totalComisiones | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="pe-4 fw-bold text-success">{{ pago.netoAPagar | currency:'USD':'symbol':'1.0-0' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
+  }
+
+  @if (!datos && !mostrarEstadisticas && historialPagos.length === 0) {
+    <div class="text-center py-5 opacity-50">
+      <i class="bi bi-clipboard-data display-1"></i><h4 class="mt-3">Panel de Finanzas</h4>
     </div>
   }
 </div>

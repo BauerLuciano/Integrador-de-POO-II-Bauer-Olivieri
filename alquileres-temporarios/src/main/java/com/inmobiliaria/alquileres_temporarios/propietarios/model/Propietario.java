@@ -30,7 +30,7 @@ public class Propietario {
     private String telefono;
     
     @Column(name = "activo")
-    private Boolean activo = true;
+    private boolean activo = true;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "esquema_comision_id")

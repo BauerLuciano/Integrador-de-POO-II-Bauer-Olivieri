@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { PropietarioService } from '../../services/propietario';
 import { Propietario } from '../../models/propietario';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-propietarios',
@@ -17,11 +18,11 @@ export class PropietariosComponent implements OnInit {
   todosLosPropietarios: Propietario[] = []; 
   propietarios: Propietario[] = [];         
 
-  // VARIABLES DE FILTRO
   filtroTexto: string = '';
   filtroEstado: string = '';
 
   private propietarioService = inject(PropietarioService);
+  private alertService = inject(AlertService);
 
   ngOnInit(): void {
     this.listar();
@@ -37,17 +38,14 @@ export class PropietariosComponent implements OnInit {
     });
   }
 
-  // LÓGICA DE FILTRADO
   filtrarPropietarios(): void {
     this.propietarios = this.todosLosPropietarios.filter(p => {
-      // 1. Filtro por texto (Nombre, Apellido o DNI)
       const termino = this.filtroTexto.toLowerCase();
       const coincideTexto = !termino || 
         (p.nombre?.toLowerCase() || '').includes(termino) ||
         (p.apellido?.toLowerCase() || '').includes(termino) ||
         (p.dni?.toLowerCase() || '').includes(termino);
 
-      // 2. Filtro por Estado (Activo/Inactivo)
       let coincideEstado = true;
       if (this.filtroEstado === 'activo') coincideEstado = p.activo !== false;
       if (this.filtroEstado === 'inactivo') coincideEstado = p.activo === false;
@@ -57,39 +55,44 @@ export class PropietariosComponent implements OnInit {
   }
 
   eliminar(id: number) {
-    if (confirm('¿Estás seguro de que querés dar de baja a este propietario?')) {
-      this.propietarioService.eliminarPropietario(id).subscribe({
-        next: () => {
-          const index = this.todosLosPropietarios.findIndex(p => p.id === id);
-          if (index !== -1) {
-            this.todosLosPropietarios[index].activo = false;
-            this.filtrarPropietarios();
+    this.alertService.confirmar('¿Dar de baja?', '¿Estás seguro de que querés dar de baja a este propietario?', 'Sí, dar de baja').then((result) => {
+      if (result.isConfirmed) {
+        this.propietarioService.eliminarPropietario(id).subscribe({
+          next: () => {
+            const index = this.todosLosPropietarios.findIndex(p => p.id === id);
+            if (index !== -1) {
+              this.todosLosPropietarios[index].activo = false;
+              this.filtrarPropietarios();
+            }
+            this.alertService.exito('¡Dado de baja!', 'El propietario fue desactivado correctamente.');
+          },
+          error: (err) => {
+            console.error('Error al dar de baja:', err);
+            this.alertService.error('Error', 'No se pudo dar de baja al propietario.');
           }
-        },
-        error: (err) => {
-          console.error('Error al dar de baja:', err);
-          alert('No se pudo dar de baja al propietario.');
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   reactivar(id: number) {
-    if (confirm('¿Estás seguro de que querés reactivar a este propietario?')) {
-      this.propietarioService.reactivarPropietario(id).subscribe({
-        next: () => {
-          const index = this.todosLosPropietarios.findIndex(p => p.id === id);
-          if (index !== -1) {
-            this.todosLosPropietarios[index].activo = true;
-            this.filtrarPropietarios();
+    this.alertService.confirmar('¿Reactivar?', '¿Estás seguro de que querés reactivar a este propietario?', 'Sí, reactivar').then((result) => {
+      if (result.isConfirmed) {
+        this.propietarioService.reactivarPropietario(id).subscribe({
+          next: () => {
+            const index = this.todosLosPropietarios.findIndex(p => p.id === id);
+            if (index !== -1) {
+              this.todosLosPropietarios[index].activo = true;
+              this.filtrarPropietarios();
+            }
+            this.alertService.exito('¡Reactivado!', 'Propietario reactivado con éxito.');
+          },
+          error: (err) => {
+            console.error('Error al reactivar:', err);
+            this.alertService.error('Error', 'No se pudo reactivar al propietario.');
           }
-          alert('Propietario reactivado con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al reactivar:', err);
-          alert('No se pudo reactivar al propietario.');
-        }
-      });
-    }
+        });
+      }
+    });
   }
 }

@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { ReservaService } from '../../services/reserva';
 import { Reserva } from '../../models/reserva';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-reservas',
@@ -26,6 +27,7 @@ export class ReservasComponent implements OnInit {
   detalleCancelacion: string = '';
 
   private reservaService = inject(ReservaService);
+  private alertService = inject(AlertService);
 
   ngOnInit(): void {
     this.cargarReservas();
@@ -83,11 +85,11 @@ export class ReservasComponent implements OnInit {
           this.todasLasReservas[index].estado = 'CANCELADA';
           this.filtrarReservas();
         }
-        alert(`¡Reserva cancelada exitosamente!\nMotivo: ${this.motivoSeleccionado}`);
+        this.alertService.exito('¡Cancelada!', `Motivo: ${this.motivoSeleccionado}`);
       },
       error: (err) => {
         console.error('Error al cancelar:', err);
-        alert("No se pudo cancelar: " + (err.error?.message || err.message));
+        this.alertService.error('No se pudo cancelar', err.error?.message || err.message);
       }
     });
   }

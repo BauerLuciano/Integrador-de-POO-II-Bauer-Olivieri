@@ -33,18 +33,34 @@ public class ReservaService {
     private final GastoRepository gastoRepo;
 
     @Transactional
-    public Reserva crearReserva(Reserva reserva) {
-        if (reserva.getFechaInicio().isAfter(reserva.getFechaFin()) || reserva.getFechaInicio().isEqual(reserva.getFechaFin())) {
-            throw new IllegalArgumentException("Las fechas de la reserva son inválidas.");
-        }
-        Propiedad propiedad = propiedadRepo.findById(reserva.getPropiedad().getId())
-                .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
-        reserva.setPropiedad(propiedad);
-        reserva.calcularCostos();
+public Reserva crearReserva(Reserva reserva) {
+    if (reserva.getFechaInicio().isAfter(reserva.getFechaFin()) || reserva.getFechaInicio().isEqual(reserva.getFechaFin())) {
+        throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la de fin.");
+    }
+
+    boolean ocupada = reservaRepo.existeSolapamiento(
+        reserva.getPropiedad().getId(), 
+        reserva.getFechaInicio(), 
+        reserva.getFechaFin()
+    );
+
+    if (ocupada) {
+        throw new IllegalStateException("¡Error! La propiedad ya se encuentra reservada o bloqueada en esas fechas.");
+    }
+
+    Propiedad propiedad = propiedadRepo.findById(reserva.getPropiedad().getId())
+            .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
+            
+    reserva.setPropiedad(propiedad);
+    reserva.calcularCostos();
+
+    if(reserva.getFechaInicio().isEqual(LocalDate.now())) {
         propiedad.setEstado("Alquilada");
         propiedadRepo.save(propiedad);
-        return reservaRepo.save(reserva);
     }
+
+    return reservaRepo.save(reserva);
+}
 
     @Transactional
     public Reserva registrarPago(Long reservaId, Pago nuevoPago) {
@@ -58,7 +74,6 @@ public class ReservaService {
         return reserva.getSaldoPendiente();
     }
 
-    // CORREGIDO: Ahora recibe el motivo y detalle y los guarda
     @Transactional
     public Reserva cancelarReserva(Long reservaId, String motivo, String detalle) {
         Reserva reserva = reservaRepo.findById(reservaId).orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
@@ -69,8 +84,6 @@ public class ReservaService {
         if (reserva.getEstado() == EstadoReserva.CANCELADA) {
             throw new IllegalStateException("La reserva ya se encuentra cancelada.");
         }
-
-        // GUARDAMOS LOS TEXTOS NUEVOS
         reserva.setMotivoCancelacion(motivo);
         reserva.setDetalleCancelacion(detalle);
 
@@ -83,8 +96,6 @@ public class ReservaService {
         }
 
         reserva.setEstado(EstadoReserva.CANCELADA);
-        
-        // Liberar la propiedad
         Propiedad prop = reserva.getPropiedad();
         prop.setEstado("Disponible");
         propiedadRepo.save(prop);

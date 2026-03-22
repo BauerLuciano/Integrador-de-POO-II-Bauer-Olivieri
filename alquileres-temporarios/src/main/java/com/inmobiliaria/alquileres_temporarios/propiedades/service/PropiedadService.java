@@ -55,10 +55,13 @@ public class PropiedadService {
 
     @Transactional
     public void eliminar(Long id) {
-        if (!propiedadRepo.existsById(id)) {
-            throw new RuntimeException("No se puede eliminar: La propiedad con ID " + id + " no existe.");
+        Propiedad propiedad = propiedadRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró la propiedad con ID: " + id));
+        if ("Alquilada".equals(propiedad.getEstado())) {
+            throw new RuntimeException("¡Error! No se puede dar de baja una propiedad que está actualmente alquilada.");
         }
-        propiedadRepo.deleteById(id);
+        propiedad.setEstado("Inactiva");
+        propiedadRepo.save(propiedad);
     }
 
     public Propiedad buscarPorId(Long id) {

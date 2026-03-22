@@ -19,7 +19,7 @@
                     <option [ngValue]="p">{{ p.direccion }} (Dueño: {{ p.propietario?.apellido || 'N/A' }})</option>
                   }
                 </select>
-                <div class="invalid-feedback">La propiedad es obligatoria.</div>
+                <div class="invalid-feedback">Debe seleccionar una propiedad.</div>
               </div>
             </div>
 
@@ -29,8 +29,21 @@
                 <div class="input-group">
                   <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                   <input type="text" formControlName="inquilino" class="form-control"
-                         placeholder="Ej: Homero Simpson"
+                         placeholder="Ej: Homero Simpson" maxlength="50"
+                         (input)="permitirSoloLetras($event, 'inquilino')"
                          [class.is-invalid]="reservaForm.get('inquilino')?.touched && reservaForm.get('inquilino')?.invalid">
+                  
+                  @if (reservaForm.get('inquilino')?.touched) {
+                    @if (reservaForm.get('inquilino')?.hasError('required')) {
+                      <div class="invalid-feedback">El nombre es obligatorio.</div>
+                    }
+                    @if (reservaForm.get('inquilino')?.hasError('pattern')) {
+                      <div class="invalid-feedback">No se permiten números ni símbolos raros.</div>
+                    }
+                    @if (reservaForm.get('inquilino')?.hasError('maxlength')) {
+                      <div class="invalid-feedback">El nombre es demasiado largo (máx 50).</div>
+                    }
+                  }
                 </div>
               </div>
             </div>
@@ -38,16 +51,18 @@
             <div class="row mb-4">
               <div class="col-md-8">
                 <label class="form-label fw-bold small text-uppercase text-muted">Fecha de Check-In</label>
-                <input type="date" formControlName="fechaInicio" class="form-control"
+                <input type="date" formControlName="fechaInicio" class="form-control" min="{{ fechaHoy }}"
                        [class.is-invalid]="reservaForm.get('fechaInicio')?.touched && reservaForm.get('fechaInicio')?.invalid">
+                <div class="invalid-feedback">Fecha obligatoria e igual o mayor a hoy.</div>
               </div>
             </div>
 
             <div class="row mb-4">
               <div class="col-md-8">
                 <label class="form-label fw-bold small text-uppercase text-muted">Fecha de Check-Out</label>
-                <input type="date" formControlName="fechaFin" class="form-control"
+                <input type="date" formControlName="fechaFin" class="form-control" min="{{ fechaHoy }}"
                        [class.is-invalid]="reservaForm.get('fechaFin')?.touched && reservaForm.get('fechaFin')?.invalid">
+                 <div class="invalid-feedback">La fecha de fin es obligatoria.</div>
               </div>
             </div>
 
@@ -56,7 +71,7 @@
                 <label class="form-label fw-bold small text-uppercase text-muted">Costo Total de Estadía</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light text-primary fw-bold">$</span>
-                  <input type="number" formControlName="montoTotal" class="form-control fw-bold" placeholder="0.00">
+                  <input type="number" formControlName="montoTotal" class="form-control fw-bold" placeholder="0.00" readonly>
                 </div>
               </div>
             </div>
@@ -66,7 +81,7 @@
                 <label class="form-label fw-bold small text-uppercase text-muted">Monto de Depósito</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light text-success fw-bold">$</span>
-                  <input type="number" formControlName="depositoRetenido" class="form-control fw-bold" placeholder="0.00">
+                  <input type="number" formControlName="depositoRetenido" class="form-control fw-bold" placeholder="0.00" readonly>
                 </div>
               </div>
             </div>

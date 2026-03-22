@@ -16,7 +16,6 @@ export class ReservaService {
     return this.http.post<Reserva>(this.apiUrl, reserva);
   }
 
-  // --- Tus métodos de la HU-13 ---
   getHistorialPropiedad(propiedadId: number): Observable<Reserva[]> {
     return this.http.get<Reserva[]>(`${this.apiUrl}/historial/propiedad/${propiedadId}`);
   }
@@ -31,5 +30,13 @@ export class ReservaService {
 
   getReservaById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  registrarPago(reservaId: number, pago: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${reservaId}/pagos`, pago);
+  }
+
+  getSaldoPendiente(id: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/${id}/saldo`);
   }
 }

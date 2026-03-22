@@ -1,23 +1,68 @@
-.card {
-  border-radius: 12px;
+/* Animación de entrada para los reportes */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
 }
 
-.bg-primary-dark {
-  background-color: rgba(0, 0, 0, 0.1);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tarjetas de Resumen (KPIs) */
+.kpi-card {
+    border-radius: 15px;
+    transition: transform 0.2s;
+    border: none;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+/* Colores financieros específicos */
+.card-bruto { border-left: 5px solid #6c757d !important; }
+.card-comision { border-left: 5px solid #dc3545 !important; }
+.card-gastos { border-left: 5px solid #fd7e14 !important; }
+
+/* FIX: Tarjeta de Neto con contraste garantizado */
+.card-neto { 
+    background-color: #0d6efd !important; /* Azul sólido de base */
+    background: linear-gradient(45deg, #0d6efd, #0046b1) !important;
+    color: white !important;
+}
+
+.card-neto .card-header {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: bold;
+}
+
+/* Filtros */
+.filter-section {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+/* Tabla de detalles */
+.table-detail thead {
+    background-color: #f1f3f5;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
 }
 
 .x-small {
-  font-size: 0.75rem;
+    font-size: 0.7rem;
+    line-height: 1.2;
 }
 
-/* Efecto para que el reporte "aparezca" suavemente */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@if (datos) {
-  .row, .card {
-    animation: fadeIn 0.5s ease-out;
-  }
+/* Historial */
+.table-history thead {
+    background-color: #198754;
+    color: white;
 }

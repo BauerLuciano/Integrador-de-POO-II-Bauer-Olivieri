@@ -31,4 +31,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
            "LEFT JOIN FETCH r.propiedad p " +
            "LEFT JOIN FETCH p.propietario")
     List<Reserva> findAllOptimizadas();
+
+    @Query("SELECT COUNT(r) > 0 FROM Reserva r " +
+       "WHERE r.propiedad.id = :propiedadId " +
+       "AND r.estado != 'CANCELADA' " +
+       "AND (:inicio < r.fechaFin AND :fin > r.fechaInicio)")
+    boolean existeSolapamiento(@Param("propiedadId") Long propiedadId, 
+                           @Param("inicio") LocalDate inicio, 
+                           @Param("fin") LocalDate fin);
 }

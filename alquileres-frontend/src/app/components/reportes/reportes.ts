@@ -6,6 +6,7 @@ import { PropietarioService } from '../../services/propietario';
 import { ReporteService } from '../../services/reporte';
 import { ReservaService } from '../../services/reserva'; 
 import { Propietario } from '../../models/propietario';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-reportes',
@@ -29,14 +30,18 @@ export class ReportesComponent implements OnInit {
   private propietarioService = inject(PropietarioService);
   private reporteService = inject(ReporteService);
   private reservaService = inject(ReservaService); 
+  private alertService = inject(AlertService);
 
   ngOnInit() {
     this.propietarioService.getPropietarios().subscribe(res => this.propietarios = res);
   }
 
-  consultar() {
+  consultar(): void {
     this.mostrarEstadisticas = false; 
-    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario");
+    if (this.idPropietarioSel == 0) {
+      this.alertService.notificacion('Atención', 'Seleccioná un propietario', 'warning');
+      return; // 👈 CORREGIDO ACÁ
+    }
 
     const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
 
@@ -47,43 +52,58 @@ export class ReportesComponent implements OnInit {
       .subscribe(res => this.historialPagos = res);
   }
 
-  descargarPDF() {
-    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario primero");
+  descargarPDF(): void {
+    if (this.idPropietarioSel == 0) {
+      this.alertService.notificacion('Atención', 'Seleccioná un propietario primero', 'warning');
+      return; // 👈 CORREGIDO ACÁ
+    }
     const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
     this.reporteService.exportarPDF(this.idPropietarioSel, mes, anio);
   }
 
-  consultarEstadisticas() {
+  consultarEstadisticas(): void {
     this.datos = null; 
     this.mostrarEstadisticas = true;
     
-    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario");
-    if (!this.fechaInicioEstadistica || !this.fechaFinEstadistica) return alert("Seleccioná un rango de fechas");
+    if (this.idPropietarioSel == 0) {
+      this.alertService.notificacion('Atención', 'Seleccioná un propietario', 'warning');
+      return; // 👈 CORREGIDO ACÁ
+    }
+    if (!this.fechaInicioEstadistica || !this.fechaFinEstadistica) {
+      this.alertService.notificacion('Atención', 'Seleccioná un rango de fechas', 'warning');
+      return; // 👈 CORREGIDO ACÁ
+    }
 
     this.reservaService.getIngresosPropietario(this.idPropietarioSel, this.fechaInicioEstadistica, this.fechaFinEstadistica)
       .subscribe(res => this.datosEstadistica = res);
   }
 
-  confirmarLiquidacion() {
-    if (this.idPropietarioSel == 0) return alert("Seleccioná un propietario primero");
-    
-    if (!confirm("¿Estás seguro de que querés liquidar y marcar como pagado? Esta acción guardará el registro y no se puede deshacer.")) {
-      return; 
+  confirmarLiquidacion(): void {
+    if (this.idPropietarioSel == 0) {
+      this.alertService.notificacion('Atención', 'Seleccioná un propietario primero', 'warning');
+      return; // 👈 CORREGIDO ACÁ
     }
+    
+    this.alertService.confirmar(
+      '¿Liquidar y marcar como pagado?', 
+      'Esta acción guardará el registro financiero y no se puede deshacer.', 
+      'Sí, liquidar'
+    ).then((result) => {
+      if (result.isConfirmed) {
+        const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
 
-    const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
-
-    this.reporteService.confirmarLiquidacion(this.idPropietarioSel, mes, anio).subscribe({
-      next: (res) => {
-        alert("¡Liquidación registrada y guardada exitosamente!");
-        this.datos = null; 
-        // Refrescamos el historial automáticamente
-        this.reporteService.getHistorialLiquidaciones(this.idPropietarioSel)
-          .subscribe(historial => this.historialPagos = historial);
-      },
-      error: (err) => {
-        console.error("Error al liquidar", err);
-        alert("Hubo un problema al procesar la liquidación.");
+        this.reporteService.confirmarLiquidacion(this.idPropietarioSel, mes, anio).subscribe({
+          next: (res) => {
+            this.alertService.exito('¡Liquidación Exitosa!', 'El registro fue guardado correctamente.');
+            this.datos = null; 
+            this.reporteService.getHistorialLiquidaciones(this.idPropietarioSel)
+              .subscribe(historial => this.historialPagos = historial);
+          },
+          error: (err) => {
+            console.error("Error al liquidar", err);
+            this.alertService.error('Error', 'Hubo un problema al procesar la liquidación.');
+          }
+        });
       }
     });
   }

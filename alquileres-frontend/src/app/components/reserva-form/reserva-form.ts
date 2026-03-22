@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ReservaService } from '../../services/reserva';
 import { PropiedadService } from '../../services/propiedad';
 import { Propiedad } from '../../models/propiedad';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-reserva-form',
@@ -18,12 +19,29 @@ export class ReservaFormComponent implements OnInit {
   private reservaService = inject(ReservaService);
   private propiedadService = inject(PropiedadService);
   private router = inject(Router);
+  private alertService = inject(AlertService);
 
+  fechaHoy: string = this.obtenerFechaLocal();
+  
   listaPropiedades: Propiedad[] = [];
+  
+  obtenerFechaLocal(): string {
+    const fecha = new Date();
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
+  }
+ 
 
   reservaForm = this.fb.group({
     propiedad: [null as Propiedad | null, Validators.required],
-    inquilino: ['', [Validators.required, Validators.minLength(3)]],
+    inquilino: ['', [
+      Validators.required, 
+      Validators.minLength(3), 
+      Validators.maxLength(50), 
+      Validators.pattern('^[a-zA-ZñÑáéíóúÁÉÍÓÚ\\s]+$')
+    ]],
     fechaInicio: ['', Validators.required],
     fechaFin: ['', Validators.required],
     montoTotal: [0, [Validators.required, Validators.min(1)]],    
@@ -31,44 +49,42 @@ export class ReservaFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // 1. Cargamos las propiedades para el select
     this.propiedadService.getPropiedades().subscribe(data => {
       this.listaPropiedades = data;
     });
 
-    // 2. Escuchamos cambios en el formulario para calcular en tiempo real
     this.reservaForm.valueChanges.subscribe(() => {
       this.calcularMontos();
     });
+  }
+  
+  permitirSoloLetras(event: any, controlName: string) {
+    const input = event.target as HTMLInputElement;
+    let valorLimpio = input.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, ''); 
+    this.reservaForm.get(controlName)?.setValue(valorLimpio, { emitEvent: false });
+    input.value = valorLimpio;
   }
 
   calcularMontos(): void {
     const val = this.reservaForm.value;
     const prop = val.propiedad as Propiedad;
     
-    // Solo calculamos si tenemos Propiedad, Fecha Inicio y Fecha Fin
     if (prop && val.fechaInicio && val.fechaFin) {
       const inicio = new Date(val.fechaInicio);
       const fin = new Date(val.fechaFin);
 
-      // Calculamos la diferencia de días
       const diffTime = fin.getTime() - inicio.getTime();
       const noches = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (noches > 0) {
-        // Fórmula: costoTotal = noches * precioPorNoche
         const costoCalculado = noches * prop.precioPorNoche;
-        
-        // Fórmula: montoDeposito = costoTotal * (porcentaje / 100)
         const depositoCalculado = costoCalculado * (prop.porcentajeDeposito / 100);
 
-        // Actualizamos el formulario sin disparar un bucle infinito (emitEvent: false)
         this.reservaForm.patchValue({
           montoTotal: costoCalculado,
           depositoRetenido: depositoCalculado
         }, { emitEvent: false });
       } else {
-        // Si la fecha es inválida (fin antes que inicio), reseteamos a 0
         this.reservaForm.patchValue({ montoTotal: 0, depositoRetenido: 0 }, { emitEvent: false });
       }
     }
@@ -80,15 +96,15 @@ export class ReservaFormComponent implements OnInit {
       return;
     }
 
-    // Al enviar, nos aseguramos de mandar el objeto de la reserva
     this.reservaService.crearReserva(this.reservaForm.value as any).subscribe({
       next: () => {
-        alert('¡Reserva cargada con éxito! 📅');
-        this.router.navigate(['/reservas']);
+        this.alertService.exito('¡Reserva Confirmada!', 'El calendario ha sido bloqueado con éxito.')
+          .then(() => this.router.navigate(['/reservas']));
       },
       error: (err) => {
         console.error('Error al guardar reserva:', err);
-        alert('Error al guardar. Revisá si las fechas no se solapan.');
+        const mensajeError = err.error || 'Hubo un error al procesar la reserva. Revisá los datos.';
+        this.alertService.error('Error al reservar', mensajeError);
       }
     });
   }

@@ -6,6 +6,7 @@ import { PropiedadService } from '../../services/propiedad';
 import { PropietarioService } from '../../services/propietario';
 import { Propietario } from '../../models/propietario';
 import { GastoService } from '../../services/gasto';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-propiedad-form',
@@ -21,21 +22,23 @@ export class PropiedadFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private location = inject(Location); 
+  private alertService = inject(AlertService);
 
   propietarios: Propietario[] = [];
   propiedadId: number | null = null;
+  estadoOriginal: string = '';
 
   gastos: any[] = [];
   gastoForm = this.fb.group({
-    concepto: ['', Validators.required],
+    concepto: ['', [Validators.required, Validators.maxLength(100)]],
     monto: [null, [Validators.required, Validators.min(1)]],
     fecha: [new Date().toISOString().substring(0, 10), Validators.required] 
   });
 
   form = this.fb.group({
-    direccion: ['', Validators.required],
+    direccion: ['', [Validators.required, Validators.maxLength(150)]],
     precioPorNoche: [0, [Validators.required, Validators.min(1)]],
-    porcentajeDeposito: [0, [Validators.required, Validators.max(100)]],
+    porcentajeDeposito: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     estado: ['Disponible'],
     propietario: [null, Validators.required],
     
@@ -64,6 +67,7 @@ export class PropiedadFormComponent implements OnInit {
   cargarDatosPropiedad(id: number) {
     this.propService.getPropiedadById(id).subscribe({
       next: (prop) => {
+        this.estadoOriginal = prop.estado;
         this.form.patchValue({
           direccion: prop.direccion,
           precioPorNoche: prop.precioPorNoche,
@@ -86,21 +90,26 @@ export class PropiedadFormComponent implements OnInit {
   }
 
   guardar() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     
     if (this.propiedadId) {
       this.propService.actualizarPropiedad(this.propiedadId, this.form.value as any).subscribe({
         next: () => {
-          alert('¡Propiedad actualizada!');
-          this.location.back(); 
-        }
+          this.alertService.exito('¡Actualizada!', 'La propiedad fue modificada con éxito.')
+            .then(() => this.location.back()); 
+        },
+        error: (err) => this.alertService.error('Error', 'No se pudo actualizar la propiedad.')
       });
     } else {
       this.propService.crearPropiedad(this.form.value as any).subscribe({
         next: () => {
-          alert('¡Propiedad creada!');
-          this.location.back(); 
-        }
+          this.alertService.exito('¡Creada!', 'La propiedad fue registrada con éxito.')
+            .then(() => this.location.back()); 
+        },
+        error: (err) => this.alertService.error('Error', 'No se pudo crear la propiedad.')
       });
     }
   }
@@ -124,17 +133,24 @@ export class PropiedadFormComponent implements OnInit {
       next: (gastoGuardado) => {
         this.gastos.push(gastoGuardado); 
         this.gastoForm.reset({ fecha: new Date().toISOString().substring(0, 10) }); 
+        this.alertService.exito('Gasto Registrado', 'Se sumó a la cuenta de la propiedad.');
       },
-      error: (err) => alert('Error al guardar el gasto.')
+      error: (err) => this.alertService.error('Error', 'No se pudo guardar el gasto.')
     });
   }
 
   eliminarGasto(id: number) {
-    if(confirm('¿Estás seguro de que querés borrar este gasto?')) {
-      this.gastoService.eliminarGasto(id).subscribe({
-        next: () => this.gastos = this.gastos.filter(g => g.id !== id),
-        error: (err) => alert('Error al borrar el gasto.')
+    this.alertService.confirmar('¿Borrar gasto?', '¿Estás seguro de que querés eliminar este registro?', 'Sí, borrar')
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.gastoService.eliminarGasto(id).subscribe({
+            next: () => {
+              this.gastos = this.gastos.filter(g => g.id !== id);
+              this.alertService.exito('¡Eliminado!', 'El gasto fue borrado del historial.');
+            },
+            error: (err) => this.alertService.error('Error', 'No se pudo borrar el gasto.')
+          });
+        }
       });
-    }
   }
 }

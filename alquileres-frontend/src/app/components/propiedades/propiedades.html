@@ -1,29 +1,30 @@
 <div class="container mt-4 pb-5">
   <div class="card shadow border-0">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
-      <h4 class="mb-0"><i class="bi bi-houses me-2"></i>Catálogo de Propiedades</h4>
-      <button class="btn btn-light btn-sm font-weight-bold shadow-sm" routerLink="/propiedades/nueva">
-        <i class="bi bi-house-add me-1"></i> NUEVA PROPIEDAD
+      <h4 class="mb-0 fw-bold"><i class="bi bi-houses-fill me-2"></i>Catálogo de Propiedades</h4>
+      <button class="btn btn-light btn-sm fw-bold shadow-sm px-3" routerLink="/propiedades/nueva">
+        <i class="bi bi-plus-lg me-1"></i> NUEVA PROPIEDAD
       </button>
     </div>
 
-    <div class="card-body bg-light border-bottom p-3">
+    <div class="card-body bg-light border-bottom p-4">
       <div class="row g-3">
         <div class="col-md-8">
           <div class="input-group shadow-sm">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-primary"></i></span>
             <input type="text" class="form-control border-start-0" 
-                   placeholder="Buscar por dirección, nombre o apellido del propietario..."
+                   placeholder="Buscar por dirección o propietario..."
                    [(ngModel)]="filtroTexto" 
                    (ngModelChange)="filtrarPropiedades()"> 
           </div>
         </div>
         <div class="col-md-4">
-          <select class="form-select shadow-sm" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarPropiedades()">
-            <option value="">Todos los estados</option>
+          <select class="form-select shadow-sm fw-medium text-muted" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarPropiedades()">
+            <option value="">🔍 Todos los estados</option>
             <option value="Disponible">🟢 Disponible</option>
             <option value="Alquilada">🔴 Alquilada</option>
-            <option value="Mantenimiento">🟡 Mantenimiento</option>
+            <option value="Mantenimiento">🟠 Mantenimiento</option>
+            <option value="Inactiva">⚪ Inactiva</option>
           </select>
         </div>
       </div>
@@ -32,9 +33,9 @@
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-          <thead class="table-light text-muted small text-uppercase">
+          <thead class="table-light text-muted small text-uppercase fw-bolder">
             <tr>
-              <th class="ps-4">Dirección</th>
+              <th class="ps-4 py-3">Dirección</th>
               <th>Propietario</th>
               <th>Tarifa/Noche</th>
               <th>Depósito</th>
@@ -47,42 +48,71 @@
               <tr>
                 <td colspan="6" class="text-center py-5">
                   <div class="spinner-border text-primary" role="status"></div>
-                  <p class="mt-2 text-muted">Cargando propiedades...</p>
+                  <p class="mt-2 text-muted fw-bold">Actualizando catálogo...</p>
                 </td>
               </tr>
             }
 
             @for (p of listaPropiedades; track p.id) {
-              <tr>
+              <tr [ngClass]="{'opacity-75 bg-light': p.estado === 'Inactiva'}">
                 <td class="ps-4">
-                  <span class="fw-bold text-dark">{{ p.direccion }}</span>
-                  <div class="small text-muted">ID: #{{ p.id }}</div>
+                  <div class="fw-bold text-dark">{{ p.direccion }}</div>
+                  <div class="small text-muted opacity-75">Ref: #{{ p.id }}</div>
                 </td>
                 <td>
-                  <i class="bi bi-person-circle me-1 text-primary"></i>
-                  {{ p.propietario?.nombre || 'Sin Dueño' }} {{ p.propietario?.apellido || '' }}
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary-subtle p-2 rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="bi bi-person text-primary"></i>
+                    </div>
+                    <span class="fw-medium">{{ p.propietario?.nombre || 'S/D' }} {{ p.propietario?.apellido || '' }}</span>
+                  </div>
                 </td>
-                <td class="fw-bold text-dark">
-                  {{ p.precioPorNoche | currency:'USD':'symbol':'1.0-0' }}
-                </td>
-                <td>{{ p.porcentajeDeposito }}%</td>
                 <td>
-                  <span class="badge rounded-pill" 
-                    [ngClass]="p.estado === 'Disponible' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
-                    {{ p.estado }}
+                  <span class="precio-destacado fw-bold text-primary">
+                    {{ p.precioPorNoche | currency:'USD':'symbol':'1.0-0' }}
                   </span>
                 </td>
+                <td>
+                    <span class="text-muted fw-bold"><i class="bi bi-shield-check me-1"></i>{{ p.porcentajeDeposito }}%</span>
+                </td>
+                
+                <td>
+                  <span class="badge rounded-pill px-3 py-2 border" 
+                    [ngClass]="{
+                      'bg-success-subtle text-success border-success': p.estado === 'Disponible',
+                      'bg-danger-subtle text-danger border-danger': p.estado === 'Alquilada',
+                      'bg-warning-subtle text-warning-emphasis border-warning': p.estado === 'Mantenimiento',
+                      'bg-secondary-subtle text-secondary border-secondary': p.estado === 'Inactiva'
+                    }">
+                    <i class="bi me-1" 
+                       [ngClass]="{
+                         'bi-check-circle-fill': p.estado === 'Disponible',
+                         'bi-house-door-fill': p.estado === 'Alquilada',
+                         'bi-tools': p.estado === 'Mantenimiento',
+                         'bi-slash-circle-fill': p.estado === 'Inactiva'
+                       }"></i>
+                    {{ p.estado || 'S/D' }}
+                  </span>
+                </td>
+                
                 <td class="text-center pe-4">
-                  <div class="btn-group">
-                    <button class="btn btn-outline-info btn-sm" [routerLink]="['/propiedades/detalle', p.id]" title="Ver Detalle">
-                      <i class="bi bi-eye"></i>
+                  <div class="d-flex justify-content-center gap-1">
+                    <button class="btn btn-action btn-outline-info" [routerLink]="['/propiedades/detalle', p.id]" title="Ver Detalle">
+                      <i class="bi bi-eye-fill"></i>
                     </button>
-                    <button class="btn btn-outline-warning btn-sm" [routerLink]="['/propiedades/editar', p.id]" title="Editar">
-                      <i class="bi bi-pencil"></i>
+                    <button class="btn btn-action btn-outline-warning" [routerLink]="['/propiedades/editar', p.id]" title="Editar">
+                      <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-outline-danger btn-sm" (click)="eliminar(p.id)" title="Eliminar">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    
+                    @if (p.estado === 'Inactiva') {
+                      <button class="btn btn-action btn-outline-success" (click)="reactivar(p)" title="Reactivar Propiedad">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                      </button>
+                    } @else {
+                      <button class="btn btn-action btn-outline-danger" (click)="eliminar(p.id)" title="Dar de baja" [disabled]="p.estado === 'Alquilada'">
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>
@@ -90,8 +120,8 @@
               @if (!loading) {
                 <tr>
                   <td colspan="6" class="text-center py-5">
-                    <i class="bi bi-search fs-1 text-muted opacity-50"></i>
-                    <p class="mt-3 text-muted">No se encontraron propiedades.</p>
+                    <i class="bi bi-search fs-1 text-muted opacity-25"></i>
+                    <p class="mt-3 text-muted">No se encontraron propiedades que coincidan.</p>
                   </td>
                 </tr>
               }

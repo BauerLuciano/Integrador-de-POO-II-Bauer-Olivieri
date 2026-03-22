@@ -1,17 +1,17 @@
 <div class="container mt-4 pb-5">
   <div class="card shadow border-0">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
-      <h4 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Gestión de Reservas</h4>
-      <button class="btn btn-light btn-sm font-weight-bold shadow-sm" routerLink="/reservas/nueva">
-        <i class="bi bi-calendar-plus me-1"></i> NUEVA RESERVA
+      <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-check-fill me-2"></i>Gestión de Reservas</h4>
+      <button class="btn btn-light btn-sm fw-bold shadow-sm px-3" routerLink="/reservas/nueva">
+        <i class="bi bi-calendar-plus-fill me-1"></i> NUEVA RESERVA
       </button>
     </div>
 
-    <div class="card-body bg-light border-bottom p-3">
+    <div class="card-body bg-light border-bottom p-4">
       <div class="row g-3">
         <div class="col-md-8">
           <div class="input-group shadow-sm">
-            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-primary"></i></span>
             <input type="text" class="form-control border-start-0" 
                    placeholder="Buscar por dirección, inquilino o dueño..."
                    [(ngModel)]="filtroTexto" 
@@ -19,10 +19,10 @@
           </div>
         </div>
         <div class="col-md-4">
-          <select class="form-select shadow-sm" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarReservas()">
-            <option value="">Todos los estados</option>
-            <option value="CONFIRMADA">🟢 Confirmadas</option>
-            <option value="CANCELADA">🔴 Canceladas</option>
+          <select class="form-select shadow-sm fw-medium text-muted" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarReservas()">
+            <option value="">🔍 Todos los estados</option>
+            <option value="CONFIRMADA">🟢 Solo Confirmadas</option>
+            <option value="CANCELADA">🔴 Solo Canceladas</option>
           </select>
         </div>
       </div>
@@ -31,60 +31,73 @@
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-          <thead class="table-light text-muted small text-uppercase">
+          <thead class="table-light text-muted small text-uppercase fw-bolder">
             <tr>
-              <th class="ps-4">Propiedad</th>
+              <th class="ps-4 py-3">Propiedad</th>
               <th>Inquilino</th>
               <th>Estadía</th>
               <th>Estado</th> 
-              <th>Total</th>
+              <th>Monto Total</th>
               <th class="text-center pe-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @if (loading) {
-              <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+              <tr>
+                <td colspan="6" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status"></div>
+                  <p class="mt-2 text-muted fw-bold">Sincronizando reservas...</p>
+                </td>
+              </tr>
             }
 
             @for (res of listaReservas; track res.id) {
               <tr>
                 <td class="ps-4">
-                  <div class="fw-bold text-dark">{{ res.propiedad?.direccion || 'S/D' }}</div>
-                  <div class="small text-muted">Dueño: {{ res.propiedad?.propietario?.apellido }}</div>
+                  <div class="fw-bold text-dark">{{ res.propiedad?.direccion || 'Sin Dirección' }}</div>
+                  <div class="small text-muted"><i class="bi bi-person-badge me-1"></i>Propietario: {{ res.propiedad?.propietario?.apellido }}</div>
                 </td>
                 
                 <td>
                   <div class="d-flex align-items-center">
-                    <i class="bi bi-person-circle text-primary me-2"></i>
+                    <div class="bg-primary-subtle p-2 rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="bi bi-person-fill text-primary"></i>
+                    </div>
                     <span class="fw-medium text-dark">{{ res.inquilino }}</span>
                   </div>
                 </td>
 
                 <td>
-                  <span class="small">{{ res.fechaInicio | date:'dd/MM' }} al {{ res.fechaFin | date:'dd/MM' }}</span>
+                  <span class="estadia-info fw-bold text-nowrap">
+                    <i class="bi bi-calendar3 me-1 text-primary"></i>
+                    {{ res.fechaInicio | date:'dd/MM' }} <i class="bi bi-arrow-right mx-1 opacity-50"></i> {{ res.fechaFin | date:'dd/MM' }}
+                  </span>
                 </td>
 
                 <td>
-                  <span class="badge rounded-pill" 
-                        [ngClass]="res.estado === 'CANCELADA' ? 'bg-danger-subtle text-danger border border-danger' : 'bg-success-subtle text-success border border-success'">
+                  <span class="badge rounded-pill px-3 py-2" 
+                        [ngClass]="res.estado === 'CANCELADA' ? 'badge-cancelada' : 'badge-confirmada'">
+                    <i class="bi" [ngClass]="res.estado === 'CANCELADA' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'"></i>
                     {{ res.estado || 'CONFIRMADA' }}
                   </span>
                 </td>
 
-                <td class="fw-bold text-dark">
-                  {{ res.montoTotal | currency:'USD':'symbol':'1.0-0' }}
+                <td>
+                  <span class="monto-total fw-bold">
+                    {{ res.montoTotal | currency:'USD':'symbol':'1.0-0' }}
+                  </span>
                 </td>
                 
                 <td class="text-center pe-4">
-                  <div class="btn-group">
-                    <button class="btn btn-outline-info btn-sm" [routerLink]="['/reservas/detalle', res.id]" title="Ver Detalle">
-                      <i class="bi bi-eye"></i>
+                  <div class="d-flex justify-content-center">
+                    <button class="btn btn-action btn-outline-info" [routerLink]="['/reservas/detalle', res.id]" title="Ver Detalle / Tickets">
+                      <i class="bi bi-receipt"></i>
                     </button>
-                    <button class="btn btn-outline-danger btn-sm" 
+                    <button class="btn btn-action btn-outline-danger" 
                             (click)="abrirModalCancelacion(res)" 
-                            title="Cancelar" 
+                            title="Cancelar Reserva" 
                             [disabled]="res.estado === 'CANCELADA' || res.liquidada">
-                      <i class="bi bi-x-circle"></i>
+                      <i class="bi bi-calendar-x"></i>
                     </button>
                   </div>
                 </td>
@@ -92,9 +105,9 @@
             } @empty {
               @if (!loading) {
                 <tr>
-                  <td colspan="6" class="text-center py-5 text-muted">
-                    <i class="bi bi-search fs-1 opacity-50"></i>
-                    <p class="mb-0">No se encontraron reservas.</p>
+                  <td colspan="6" class="text-center py-5">
+                    <i class="bi bi-calendar-x fs-1 text-muted opacity-25"></i>
+                    <p class="mt-3 text-muted fw-medium">No se encontraron reservas registradas.</p>
                   </td>
                 </tr>
               }
@@ -106,37 +119,43 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalCancelacion" tabindex="-1" aria-labelledby="modalCancelacionLabel" aria-hidden="true">
+<div class="modal fade" id="modalCancelacion" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
+    <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="modalCancelacionLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Cancelar Reserva</h5>
+        <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Cancelación</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4">
-        <p class="mb-4">Estás a punto de cancelar la reserva de <strong class="text-primary">{{ reservaACancelar?.inquilino }}</strong> en <strong>{{ reservaACancelar?.propiedad?.direccion }}</strong>. <br><small class="text-muted">Se aplicarán las penalidades correspondientes según la política.</small></p>
+        <div class="alert alert-warning border-warning-subtle py-2 small">
+            <i class="bi bi-info-circle-fill me-2"></i> Esta acción aplicará penalidades de forma automática.
+        </div>
+        <p class="mb-4">
+            Vas a cancelar la reserva de <strong class="text-dark">{{ reservaACancelar?.inquilino }}</strong> 
+            en la propiedad de <strong class="text-dark">{{ reservaACancelar?.propiedad?.direccion }}</strong>.
+        </p>
         
         <div class="mb-3">
-          <label class="form-label fw-bold small text-muted">Motivo de la cancelación <span class="text-danger">*</span></label>
-          <select class="form-select" [(ngModel)]="motivoSeleccionado">
-            <option value="" disabled selected>Seleccioná un motivo...</option>
-            <option value="Inconveniente del Inquilino">Inconveniente del Inquilino (Enfermedad, Viaje)</option>
+          <label class="form-label fw-bold small text-muted text-uppercase">Motivo de la cancelación *</label>
+          <select class="form-select shadow-sm" [(ngModel)]="motivoSeleccionado">
+            <option value="" disabled selected>Seleccioná el motivo...</option>
+            <option value="Inconveniente del Inquilino">Inconveniente del Inquilino</option>
             <option value="Problemas con la Propiedad">Problemas con la Propiedad</option>
             <option value="Decisión del Propietario">Decisión del Propietario</option>
-            <option value="Error en la carga">Error en la carga de la reserva</option>
+            <option value="Error en la carga">Error en la carga</option>
             <option value="Otro">Otro motivo</option>
           </select>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label fw-bold small text-muted">Detalles adicionales (Opcional)</label>
-          <textarea class="form-control" rows="2" placeholder="Escribí más detalles acá si es necesario..." [(ngModel)]="detalleCancelacion"></textarea>
+        <div class="mb-0">
+          <label class="form-label fw-bold small text-muted text-uppercase">Detalles adicionales</label>
+          <textarea class="form-control shadow-sm" rows="3" placeholder="Contanos brevemente qué pasó..." [(ngModel)]="detalleCancelacion"></textarea>
         </div>
       </div>
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-danger px-4" (click)="confirmarCancelacion()" [disabled]="!motivoSeleccionado">
-          Sí, Cancelar Reserva
+      <div class="modal-footer bg-light border-0">
+        <button type="button" class="btn btn-link text-muted fw-bold text-decoration-none" data-bs-dismiss="modal">Mantener Reserva</button>
+        <button type="button" class="btn btn-danger px-4 fw-bold shadow-sm" (click)="confirmarCancelacion()" [disabled]="!motivoSeleccionado">
+          CANCELAR AHORA
         </button>
       </div>
     </div>

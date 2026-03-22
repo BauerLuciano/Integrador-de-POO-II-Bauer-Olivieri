@@ -1,0 +1,73 @@
+/* Sombra suave para la tarjeta principal */
+.card.shadow {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Header con gradiente moderno */
+.card-header.bg-primary {
+    background: linear-gradient(45deg, #0d6efd, #0046b1) !important;
+    border-bottom: none;
+}
+
+/* Animación para las filas de la tabla */
+.table tbody tr {
+    transition: all 0.2s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+    transform: scale(1.002);
+}
+
+/* Estilo para los Badges (Estados) */
+.badge-disponible {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.badge-alquilada {
+    background-color: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+.badge-mantenimiento {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+}
+
+/* Estilo para los botones de acciones */
+.btn-action {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin: 0 2px;
+    transition: transform 0.2s;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+}
+
+/* Barra de búsqueda */
+.input-group-text {
+    border-radius: 8px 0 0 8px;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+}
+
+/* Columna de Precio destacada */
+.precio-destacado {
+    color: #198754;
+    font-size: 1.1rem;
+}
