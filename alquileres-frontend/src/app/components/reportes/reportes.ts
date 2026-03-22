@@ -27,6 +27,8 @@ export class ReportesComponent implements OnInit {
   fechaFinEstadistica: string = '';
   datosEstadistica: any = null;
 
+  paginaActual: number = 1;
+
   private propietarioService = inject(PropietarioService);
   private reporteService = inject(ReporteService);
   private reservaService = inject(ReservaService); 
@@ -36,11 +38,21 @@ export class ReportesComponent implements OnInit {
     this.propietarioService.getPropietarios().subscribe(res => this.propietarios = res);
   }
 
+  resetearVistas(): void {
+    this.datos = null;
+    this.historialPagos = [];
+    this.mostrarEstadisticas = false;
+    this.datosEstadistica = null;
+    this.paginaActual = 1;
+  }
+
   consultar(): void {
     this.mostrarEstadisticas = false; 
+    this.paginaActual = 1; 
+
     if (this.idPropietarioSel == 0) {
       this.alertService.notificacion('Atención', 'Seleccioná un propietario', 'warning');
-      return; // 👈 CORREGIDO ACÁ
+      return; 
     }
 
     const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
@@ -49,13 +61,15 @@ export class ReportesComponent implements OnInit {
       .subscribe(res => this.datos = res);
 
     this.reporteService.getHistorialLiquidaciones(this.idPropietarioSel)
-      .subscribe(res => this.historialPagos = res);
+      .subscribe(res => {
+        this.historialPagos = res.sort((a: any, b: any) => b.id - a.id);
+      });
   }
 
   descargarPDF(): void {
     if (this.idPropietarioSel == 0) {
       this.alertService.notificacion('Atención', 'Seleccioná un propietario primero', 'warning');
-      return; // 👈 CORREGIDO ACÁ
+      return; 
     }
     const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
     this.reporteService.exportarPDF(this.idPropietarioSel, mes, anio);
@@ -67,11 +81,11 @@ export class ReportesComponent implements OnInit {
     
     if (this.idPropietarioSel == 0) {
       this.alertService.notificacion('Atención', 'Seleccioná un propietario', 'warning');
-      return; // 👈 CORREGIDO ACÁ
+      return; 
     }
     if (!this.fechaInicioEstadistica || !this.fechaFinEstadistica) {
       this.alertService.notificacion('Atención', 'Seleccioná un rango de fechas', 'warning');
-      return; // 👈 CORREGIDO ACÁ
+      return; 
     }
 
     this.reservaService.getIngresosPropietario(this.idPropietarioSel, this.fechaInicioEstadistica, this.fechaFinEstadistica)
@@ -81,7 +95,12 @@ export class ReportesComponent implements OnInit {
   confirmarLiquidacion(): void {
     if (this.idPropietarioSel == 0) {
       this.alertService.notificacion('Atención', 'Seleccioná un propietario primero', 'warning');
-      return; // 👈 CORREGIDO ACÁ
+      return; 
+    }
+
+    if (this.datos?.detalleReservas?.length === 0 && this.datos?.detalleGastos?.length === 0) {
+      this.alertService.notificacion('Sin movimientos', 'No hay ingresos ni gastos para liquidar en este período.', 'info');
+      return;
     }
     
     this.alertService.confirmar(
@@ -96,8 +115,11 @@ export class ReportesComponent implements OnInit {
           next: (res) => {
             this.alertService.exito('¡Liquidación Exitosa!', 'El registro fue guardado correctamente.');
             this.datos = null; 
+            this.paginaActual = 1; 
             this.reporteService.getHistorialLiquidaciones(this.idPropietarioSel)
-              .subscribe(historial => this.historialPagos = historial);
+              .subscribe(historial => {
+                this.historialPagos = historial.sort((a: any, b: any) => b.id - a.id);
+              });
           },
           error: (err) => {
             console.error("Error al liquidar", err);

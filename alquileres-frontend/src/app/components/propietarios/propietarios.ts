@@ -20,6 +20,9 @@ export class PropietariosComponent implements OnInit {
 
   filtroTexto: string = '';
   filtroEstado: string = '';
+  
+  // Variable para controlar la paginación
+  paginaActual: number = 1;
 
   private propietarioService = inject(PropietarioService);
   private alertService = inject(AlertService);
@@ -39,6 +42,9 @@ export class PropietariosComponent implements OnInit {
   }
 
   filtrarPropietarios(): void {
+    // Reseteamos a la página 1 al filtrar
+    this.paginaActual = 1;
+
     this.propietarios = this.todosLosPropietarios.filter(p => {
       const termino = this.filtroTexto.toLowerCase();
       const coincideTexto = !termino || 
@@ -62,7 +68,7 @@ export class PropietariosComponent implements OnInit {
             const index = this.todosLosPropietarios.findIndex(p => p.id === id);
             if (index !== -1) {
               this.todosLosPropietarios[index].activo = false;
-              this.filtrarPropietarios();
+              this.filtrarPropietarios(); // Esto también resetea la página a 1
             }
             this.alertService.exito('¡Dado de baja!', 'El propietario fue desactivado correctamente.');
           },
@@ -83,7 +89,7 @@ export class PropietariosComponent implements OnInit {
             const index = this.todosLosPropietarios.findIndex(p => p.id === id);
             if (index !== -1) {
               this.todosLosPropietarios[index].activo = true;
-              this.filtrarPropietarios();
+              this.filtrarPropietarios(); // Esto también resetea la página a 1
             }
             this.alertService.exito('¡Reactivado!', 'Propietario reactivado con éxito.');
           },

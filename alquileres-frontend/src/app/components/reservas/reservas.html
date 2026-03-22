@@ -21,7 +21,7 @@
         <div class="col-md-4">
           <select class="form-select shadow-sm fw-medium text-muted" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarReservas()">
             <option value="">🔍 Todos los estados</option>
-            <option value="CONFIRMADA">🟢 Solo Confirmadas</option>
+            <option value="ACTIVA">🟢 Solo Activas</option>
             <option value="CANCELADA">🔴 Solo Canceladas</option>
           </select>
         </div>
@@ -51,7 +51,7 @@
               </tr>
             }
 
-            @for (res of listaReservas; track res.id) {
+            @for (res of listaReservas | slice:(paginaActual - 1) * 7 : paginaActual * 7; track res.id) {
               <tr>
                 <td class="ps-4">
                   <div class="fw-bold text-dark">{{ res.propiedad?.direccion || 'Sin Dirección' }}</div>
@@ -78,7 +78,7 @@
                   <span class="badge rounded-pill px-3 py-2" 
                         [ngClass]="res.estado === 'CANCELADA' ? 'badge-cancelada' : 'badge-confirmada'">
                     <i class="bi" [ngClass]="res.estado === 'CANCELADA' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'"></i>
-                    {{ res.estado || 'CONFIRMADA' }}
+                    {{ res.estado || 'ACTIVA' }}
                   </span>
                 </td>
 
@@ -93,7 +93,7 @@
                     <button class="btn btn-action btn-outline-info" [routerLink]="['/reservas/detalle', res.id]" title="Ver Detalle / Tickets">
                       <i class="bi bi-receipt"></i>
                     </button>
-                    <button class="btn btn-action btn-outline-danger" 
+                    <button class="btn btn-action btn-outline-danger ms-1" 
                             (click)="abrirModalCancelacion(res)" 
                             title="Cancelar Reserva" 
                             [disabled]="res.estado === 'CANCELADA' || res.liquidada">
@@ -116,6 +116,31 @@
         </table>
       </div>
     </div>
+
+    @if (listaReservas.length > 0) {
+      <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center border-top">
+        <span class="text-muted fw-medium small">
+          Total: <span class="badge bg-secondary">{{ listaReservas.length }}</span> reservas
+        </span>
+        
+        <ul class="pagination pagination-sm mb-0 shadow-sm">
+          <li class="page-item" [class.disabled]="paginaActual === 1">
+            <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual - 1">
+              <i class="bi bi-chevron-left me-1"></i> Anterior
+            </button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link text-dark fw-bold bg-light">Página {{ paginaActual }}</span>
+          </li>
+          <li class="page-item" [class.disabled]="paginaActual * 7 >= listaReservas.length">
+            <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual + 1">
+               Siguiente <i class="bi bi-chevron-right ms-1"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    }
+
   </div>
 </div>
 

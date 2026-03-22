@@ -53,7 +53,7 @@
               </tr>
             }
 
-            @for (p of listaPropiedades; track p.id) {
+            @for (p of listaPropiedades | slice:(paginaActual - 1) * 7 : paginaActual * 7; track p.id) {
               <tr [ngClass]="{'opacity-75 bg-light': p.estado === 'Inactiva'}">
                 <td class="ps-4">
                   <div class="fw-bold text-dark">{{ p.direccion }}</div>
@@ -130,5 +130,30 @@
         </table>
       </div>
     </div>
+    
+    @if (listaPropiedades.length > 0) {
+      <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center border-top">
+        <span class="text-muted fw-medium small">
+          Total: <span class="badge bg-secondary">{{ listaPropiedades.length }}</span> propiedades
+        </span>
+        
+        <ul class="pagination pagination-sm mb-0 shadow-sm">
+          <li class="page-item" [class.disabled]="paginaActual === 1">
+            <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual - 1">
+              <i class="bi bi-chevron-left me-1"></i> Anterior
+            </button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link text-dark fw-bold bg-light">Página {{ paginaActual }}</span>
+          </li>
+          <li class="page-item" [class.disabled]="paginaActual * 7 >= listaPropiedades.length">
+            <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual + 1">
+               Siguiente <i class="bi bi-chevron-right ms-1"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    }
+    
   </div>
 </div>

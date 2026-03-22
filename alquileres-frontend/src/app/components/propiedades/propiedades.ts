@@ -22,6 +22,9 @@ export class PropiedadesComponent implements OnInit {
   filtroTexto: string = '';
   filtroEstado: string = '';
 
+  // Variable para controlar la paginación
+  paginaActual: number = 1;
+
   private propiedadService = inject(PropiedadService);
   private alertService = inject(AlertService);
 
@@ -45,6 +48,9 @@ export class PropiedadesComponent implements OnInit {
   }
 
   filtrarPropiedades(): void {
+    // Fundamental: Resetear a la página 1 cada vez que se busca algo
+    this.paginaActual = 1;
+
     this.listaPropiedades = this.todasLasPropiedades.filter(p => {
       const termino = this.filtroTexto.toLowerCase();
       const coincideTexto = !termino || 
@@ -71,7 +77,7 @@ export class PropiedadesComponent implements OnInit {
             const index = this.todasLasPropiedades.findIndex(p => p.id === id);
             if (index !== -1) {
               this.todasLasPropiedades[index].estado = 'Inactiva';
-              this.filtrarPropiedades();
+              this.filtrarPropiedades(); // Vuelve a ejecutar el filtro (y resetea la página a 1)
             }
             this.alertService.exito('¡Dada de baja!', 'La propiedad fue marcada como Inactiva con éxito.');
           },
@@ -101,7 +107,7 @@ export class PropiedadesComponent implements OnInit {
             const index = this.todasLasPropiedades.findIndex(p => p.id === idPropiedad);
             if (index !== -1) {
               this.todasLasPropiedades[index].estado = 'Disponible';
-              this.filtrarPropiedades();
+              this.filtrarPropiedades(); // Vuelve a ejecutar el filtro (y resetea la página a 1)
             }
             this.alertService.exito('¡Reactivada!', 'La propiedad ya está disponible en el catálogo.');
           },
