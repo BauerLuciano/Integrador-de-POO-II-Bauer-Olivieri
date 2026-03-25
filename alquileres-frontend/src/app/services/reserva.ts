@@ -39,4 +39,8 @@ export class ReservaService {
   getSaldoPendiente(id: number): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/${id}/saldo`);
   }
+
+  finalizarReserva(id: number): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.apiUrl}/${id}/finalizar`, {});
+  }
 }

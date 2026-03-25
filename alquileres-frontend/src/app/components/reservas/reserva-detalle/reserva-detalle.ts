@@ -105,4 +105,25 @@ export class ReservaDetalleComponent implements OnInit {
   imprimirTicket() {
     window.print();
   }
+
+  finalizarReserva() {
+    this.alertService.confirmar(
+      '¿Registrar Check-Out?', 
+      'La reserva pasará a "Finalizada" y la propiedad quedará "Disponible" para nuevos alquileres.', 
+      'Sí, finalizar'
+    ).then((result) => {
+      if (result.isConfirmed) {
+        this.reservaService.finalizarReserva(this.reserva.id).subscribe({
+          next: () => {
+            this.reserva.estado = 'FINALIZADA';
+            this.alertService.exito('¡Check-Out Exitoso!', 'La reserva se cerró y la propiedad fue liberada.');
+          },
+          error: (err) => {
+            console.error('Error al finalizar:', err);
+            this.alertService.error('Error', 'No se pudo finalizar la reserva.');
+          }
+        });
+      }
+    });
+  }
 }

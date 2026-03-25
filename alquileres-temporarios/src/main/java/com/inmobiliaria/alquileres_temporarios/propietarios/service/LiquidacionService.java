@@ -26,17 +26,29 @@ public class LiquidacionService {
     private final PropietarioRepository propietarioRepo;
     private final LiquidacionRepository liquidacionRepo;
 
+    @Transactional
     public LiquidacionResponse calcularLiquidacion(Long propietarioId, int mes, int anio) {
         Propietario p = propietarioRepo.findById(propietarioId)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
-
-        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
+        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio)
+                .stream()
+                .filter(r -> r.getEstado() != EstadoReserva.PENDIENTE)
+                .filter(r -> r.getEstado() == EstadoReserva.CANCELADA || r.getSaldoPendiente().compareTo(BigDecimal.ZERO) == 0)
+                .toList();
+                
         List<GastoMantenimiento> gastos = gastoRepo.buscarGastosPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
 
-        BigDecimal ingresos = reservas.stream()
+        BigDecimal ingresosEstadias = reservas.stream()
                 .filter(r -> r.getEstado() != EstadoReserva.CANCELADA)
-                .map(Reserva::getMontoTotal)
+                .map(r -> r.getMontoTotal().subtract(r.getDepositoRetenido()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal ingresosPenalidades = reservas.stream()
+                .filter(r -> r.getMontoPenalidad() != null)
+                .map(Reserva::getMontoPenalidad)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal ingresos = ingresosEstadias.add(ingresosPenalidades);
 
         BigDecimal comisiones = reservas.stream()
                 .filter(r -> r.getEstado() != EstadoReserva.CANCELADA)
@@ -59,8 +71,12 @@ public class LiquidacionService {
     public Liquidacion confirmarLiquidacion(Long propietarioId, int mes, int anio) {
         Propietario p = propietarioRepo.findById(propietarioId)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
-
-        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
+        List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio)
+                .stream()
+                .filter(r -> r.getEstado() != EstadoReserva.PENDIENTE)
+                .filter(r -> r.getEstado() == EstadoReserva.CANCELADA || r.getSaldoPendiente().compareTo(BigDecimal.ZERO) == 0)
+                .toList();
+                
         List<GastoMantenimiento> gastos = gastoRepo.buscarGastosPorPropietarioYPeriodoPendientes(propietarioId, mes, anio);
 
         LiquidacionResponse calculo = calcularLiquidacion(propietarioId, mes, anio);

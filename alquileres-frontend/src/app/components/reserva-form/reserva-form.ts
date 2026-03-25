@@ -77,11 +77,11 @@ export class ReservaFormComponent implements OnInit {
       const noches = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       if (noches > 0) {
-        const costoCalculado = noches * prop.precioPorNoche;
-        const depositoCalculado = costoCalculado * (prop.porcentajeDeposito / 100);
-
+        const costoEstadia = noches * prop.precioPorNoche;
+        const depositoCalculado = costoEstadia * (prop.porcentajeDeposito / 100);
+        const totalAPagar = costoEstadia + depositoCalculado;
         this.reservaForm.patchValue({
-          montoTotal: costoCalculado,
+          montoTotal: totalAPagar,
           depositoRetenido: depositoCalculado
         }, { emitEvent: false });
       } else {

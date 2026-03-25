@@ -22,7 +22,6 @@ export class ReservasComponent implements OnInit {
   filtroTexto: string = '';
   filtroEstado: string = '';
 
-  // Variable para controlar la paginación
   paginaActual: number = 1;
 
   reservaACancelar: any = null;
@@ -52,7 +51,6 @@ export class ReservasComponent implements OnInit {
   }
 
   filtrarReservas(): void {
-    // Reseteamos a la página 1 cuando el usuario filtra
     this.paginaActual = 1;
 
     this.listaReservas = this.todasLasReservas.filter(res => {
@@ -89,7 +87,7 @@ export class ReservasComponent implements OnInit {
         const index = this.todasLasReservas.findIndex(r => r.id === this.reservaACancelar.id);
         if (index !== -1) {
           this.todasLasReservas[index].estado = 'CANCELADA';
-          this.filtrarReservas(); // Esto también reinicia la página
+          this.filtrarReservas(); 
         }
         this.alertService.exito('¡Cancelada!', `Motivo: ${this.motivoSeleccionado}`);
       },

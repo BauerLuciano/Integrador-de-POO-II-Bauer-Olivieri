@@ -21,7 +21,9 @@
         <div class="col-md-4">
           <select class="form-select shadow-sm fw-medium text-muted" [(ngModel)]="filtroEstado" (ngModelChange)="filtrarReservas()">
             <option value="">🔍 Todos los estados</option>
+            <option value="PENDIENTE">🟡 Solo Pendientes</option>
             <option value="ACTIVA">🟢 Solo Activas</option>
+            <option value="FINALIZADA">⚪ Solo Finalizadas</option>
             <option value="CANCELADA">🔴 Solo Canceladas</option>
           </select>
         </div>
@@ -76,9 +78,20 @@
 
                 <td>
                   <span class="badge rounded-pill px-3 py-2" 
-                        [ngClass]="res.estado === 'CANCELADA' ? 'badge-cancelada' : 'badge-confirmada'">
-                    <i class="bi" [ngClass]="res.estado === 'CANCELADA' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'"></i>
-                    {{ res.estado || 'ACTIVA' }}
+                        [ngClass]="{
+                          'bg-warning text-dark border border-warning': res.estado === 'PENDIENTE',
+                          'bg-success border border-success': res.estado === 'ACTIVA',
+                          'bg-secondary border border-secondary': res.estado === 'FINALIZADA',
+                          'bg-danger border border-danger': res.estado === 'CANCELADA'
+                        }">
+                    <i class="bi me-1" 
+                       [ngClass]="{
+                         'bi-hourglass-split': res.estado === 'PENDIENTE',
+                         'bi-check-circle-fill': res.estado === 'ACTIVA',
+                         'bi-door-closed-fill': res.estado === 'FINALIZADA',
+                         'bi-x-circle-fill': res.estado === 'CANCELADA'
+                       }"></i>
+                    {{ res.estado || 'PENDIENTE' }}
                   </span>
                 </td>
 
@@ -96,7 +109,7 @@
                     <button class="btn btn-action btn-outline-danger ms-1" 
                             (click)="abrirModalCancelacion(res)" 
                             title="Cancelar Reserva" 
-                            [disabled]="res.estado === 'CANCELADA' || res.liquidada">
+                            [disabled]="res.estado === 'CANCELADA' || res.estado === 'FINALIZADA' || res.liquidada">
                       <i class="bi bi-calendar-x"></i>
                     </button>
                   </div>

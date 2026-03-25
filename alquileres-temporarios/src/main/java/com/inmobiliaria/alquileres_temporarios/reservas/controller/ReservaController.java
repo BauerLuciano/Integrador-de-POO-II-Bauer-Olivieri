@@ -103,4 +103,9 @@ public class ReservaController {
     public ResponseEntity<java.math.BigDecimal> obtenerSaldo(@PathVariable Long id) {
         return ResponseEntity.ok(service.consultarSaldo(id));
     }
+
+    @PutMapping("/{id}/finalizar")
+    public ResponseEntity<Reserva> finalizarReserva(@PathVariable Long id) {
+        return ResponseEntity.ok(service.finalizarReserva(id));
+    }
 }

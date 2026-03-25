@@ -51,9 +51,8 @@ public class Reserva implements BloqueoCalendario {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoReserva estado = EstadoReserva.ACTIVA;
+    private EstadoReserva estado = EstadoReserva.PENDIENTE;
 
-    // NUEVOS CAMPOS PARA LA CANCELACIÓN
     @Column(length = 100)
     private String motivoCancelacion;
 
@@ -69,8 +68,6 @@ public class Reserva implements BloqueoCalendario {
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pago> pagos = new ArrayList<>();
 
-    // --- MÉTODOS DE NEGOCIO ---
-
     public boolean seSolapaCon(LocalDate otraFechaInicio, LocalDate otraFechaFin) {
         if (this.estado == EstadoReserva.CANCELADA) {
             return false; 
@@ -78,7 +75,7 @@ public class Reserva implements BloqueoCalendario {
         return otraFechaInicio.isBefore(this.fechaFin) && otraFechaFin.isAfter(this.fechaInicio);
     }
 
-    public void registrarPago(Pago nuevoPago) {
+   public void registrarPago(Pago nuevoPago) {
         if (nuevoPago.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El monto del pago debe ser mayor a cero.");
         }
@@ -90,6 +87,10 @@ public class Reserva implements BloqueoCalendario {
         
         this.pagos.add(nuevoPago);
         nuevoPago.setReserva(this); 
+        
+        if (this.estado == EstadoReserva.PENDIENTE) {
+            this.estado = EstadoReserva.ACTIVA;
+        }
     }
 
     public BigDecimal getSaldoPendiente() {
@@ -102,12 +103,11 @@ public class Reserva implements BloqueoCalendario {
     public void calcularCostos() {
         long noches = ChronoUnit.DAYS.between(fechaInicio, fechaFin);
         BigDecimal precioPorNoche = propiedad.getPrecioPorNoche();
-        this.montoTotal = precioPorNoche.multiply(BigDecimal.valueOf(noches));
+        BigDecimal costoEstadia = precioPorNoche.multiply(BigDecimal.valueOf(noches));
         BigDecimal porcentajeDepo = propiedad.getPorcentajeDeposito()
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                
-        this.depositoRetenido = this.montoTotal.multiply(porcentajeDepo);
-        
-        this.comisionInmobiliaria = propiedad.getPropietario().calcularComision(this.montoTotal);
+        this.depositoRetenido = costoEstadia.multiply(porcentajeDepo);
+        this.montoTotal = costoEstadia.add(this.depositoRetenido);
+        this.comisionInmobiliaria = propiedad.getPropietario().calcularComision(costoEstadia);
     }
 }
