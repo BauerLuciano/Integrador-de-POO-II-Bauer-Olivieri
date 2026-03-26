@@ -6,7 +6,7 @@ Desarrollado como trabajo integrador de la materia **Programación Orientada a O
 
 ---
 
-##  Descripción
+## Descripción
 
 El sistema permite a una inmobiliaria administrar propiedades de distintos propietarios que se alquilan por períodos cortos.
 
@@ -21,39 +21,39 @@ El sistema contempla reglas de negocio reales como disponibilidad, penalidades p
 
 ---
 
-##  Funcionalidades Principales
+## Funcionalidades Principales
 
-###  Gestión de Propiedades y Propietarios
+### Gestión de Propiedades y Propietarios
 - Alta y modificación de propiedades
 - Asociación de propiedades a propietarios
 - Configuración de esquemas de comisión (fijo o escalonado)
 
-###  Gestión de Reservas
+### Gestión de Reservas
 - Registro de reservas con validación de disponibilidad
 - Control de solapamientos con excepciones
 - Cálculo automático de tarifas y depósito
 
-###  Cancelaciones y Penalidades
+### Cancelaciones y Penalidades
 - Cancelación de reservas según política configurada
 - Aplicación automática de cargos según anticipación
 
-###  Registro de Cobros
+### Registro de Cobros
 - Registro de señas y pagos parciales
 - Control de saldo pendiente al ingreso
 
-###  Liquidaciones a Propietarios
+### Liquidaciones a Propietarios
 - Liquidación mensual por período
 - Descuento de comisiones y gastos
 - Aplicación de penalidades
 
-###  Reportes e Historial
+### Reportes e Historial
 - Historial de ocupación por propiedad
 - Ingresos por propietario
 - Rentabilidad por período
 
 ---
 
-##  Documentación del Proyecto
+## Documentación del Proyecto
 
 Toda la documentación se encuentra en la carpeta `/docs`.
 
@@ -68,33 +68,46 @@ El proyecto se desarrolla en **2 iteraciones dentro de 4 semanas**.
 
 ---
 
-##  Estado del Proyecto
+## Estado del Proyecto
 
 - Iteración 1 → Sistema funcional al 50%
 - Iteración 2 → Sistema completo + refactorización
 
 ---
 
-##  Requisitos del Sistema
+## Requisitos del Sistema
 
-Completar según la tecnología utilizada.
+Para poder ejecutar este proyecto en tu entorno local, necesitarás:
 
-Ejemplo:
-
-- Java 17
-- Maven o Gradle
-- Base de datos (SQLite / PostgreSQL / otra)
-- IDE recomendado (IntelliJ / VS Code / otro)
+- **Backend:** Java 17 y Maven
+- **Frontend:** Node.js y Angular CLI
+- **Base de Datos:** PostgreSQL
+- **IDE recomendado:** VS Code / IntelliJ IDEA / Eclipse
 
 ---
 
-##  Cómo ejecutar el proyecto
+## Cómo ejecutar el proyecto
 
-(Completar cuando el sistema sea ejecutable)
+Para ejecutar el sistema localmente, necesitarás abrir dos terminales independientes (una para el backend y otra para el frontend).
 
-Ejemplo:
+Primero, cloná el repositorio:
 
 ```bash
-git clone <https://github.com/BauerLuciano/Integrador-de-POO-II-Bauer-Olivieri.git>
-cd proyecto
-comando-para-ejecutar (ver despues que ponemos)
+git clone https://github.com/BauerLuciano/Integrador-de-POO-II-Bauer-Olivieri.git
+```
+
+### 1. Levantar el Backend (Spring Boot)
+En la primera terminal, ingresá a la carpeta del backend y ejecutá el proyecto con Maven:
+
+```bash
+cd alquileres-temporarios
+mvn spring-boot:run
+```
+
+### 2. Levantar el Frontend (Angular)
+En la segunda terminal, ingresá a la carpeta del frontend y levantá el servidor de desarrollo:
+
+```bash
+cd alquileres-frontend
+ng serve -o
+```
