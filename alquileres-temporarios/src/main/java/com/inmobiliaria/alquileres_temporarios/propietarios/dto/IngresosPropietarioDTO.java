@@ -13,4 +13,5 @@ public class IngresosPropietarioDTO {
     private int cantidadReservas;
     private BigDecimal ingresosTotales;
     private BigDecimal comisionTotal;
+    private BigDecimal gastosTotales; 
 }

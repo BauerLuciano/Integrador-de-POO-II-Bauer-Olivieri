@@ -133,12 +133,20 @@ public Reserva crearReserva(Reserva reserva) {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
                 
         BigDecimal ingresosBrutos = ingresosEstadias.add(ingresosPenalidades);
+        
         BigDecimal comisionTotal = reservasValidas.stream()
                 .filter(r -> r.getEstado() != EstadoReserva.CANCELADA) 
                 .map(Reserva::getComisionInmobiliaria)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<com.inmobiliaria.alquileres_temporarios.gastos.model.GastoMantenimiento> gastos = 
+                gastoRepo.buscarGastosPorPropietarioYFechas(propietarioId, inicio, fin);
+                
+        BigDecimal gastosTotales = gastos.stream()
+                .map(com.inmobiliaria.alquileres_temporarios.gastos.model.GastoMantenimiento::getMonto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         
-        return new IngresosPropietarioDTO(propietarioId, reservasValidas.size(), ingresosBrutos, comisionTotal);
+        return new IngresosPropietarioDTO(propietarioId, reservasValidas.size(), ingresosBrutos, comisionTotal, gastosTotales);
     }
 
     public ReporteLiquidacionDTO generarLiquidacion(Long propietarioId, int mes, int anio) {
@@ -164,7 +172,7 @@ public Reserva crearReserva(Reserva reserva) {
         dto.setDetalleGastos(gastos.stream().map(g -> new GastoDetalleDTO(g.getConcepto(), g.getMonto())).toList());
 
         BigDecimal estadias = reservas.stream()
-                .filter(r -> r.getEstado() != EstadoReserva.CANCELADA) // No sumamos estadía de canceladas
+                .filter(r -> r.getEstado() != EstadoReserva.CANCELADA) 
                 .map(r -> r.getMontoTotal().subtract(r.getDepositoRetenido()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
                 

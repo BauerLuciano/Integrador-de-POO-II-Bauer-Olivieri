@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class LiquidacionService {
     public LiquidacionResponse calcularLiquidacion(Long propietarioId, int mes, int anio) {
         Propietario p = propietarioRepo.findById(propietarioId)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+                
         List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio)
                 .stream()
                 .filter(r -> r.getEstado() != EstadoReserva.PENDIENTE)
@@ -48,7 +50,7 @@ public class LiquidacionService {
                 .map(Reserva::getMontoPenalidad)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal ingresos = ingresosEstadias.add(ingresosPenalidades);
+        BigDecimal ingresosBrutos = ingresosEstadias.add(ingresosPenalidades);
 
         BigDecimal comisiones = reservas.stream()
                 .filter(r -> r.getEstado() != EstadoReserva.CANCELADA)
@@ -59,11 +61,27 @@ public class LiquidacionService {
                 .map(GastoMantenimiento::getMonto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalNeto = ingresos.subtract(comisiones).subtract(totalGastos);
+        BigDecimal totalNeto = ingresosBrutos.subtract(comisiones).subtract(totalGastos);
+
+        List<LiquidacionResponse.DetalleReservaDto> detalleReservas = reservas.stream()
+            .map(r -> new LiquidacionResponse.DetalleReservaDto(
+                r.getFechaInicio(),
+                r.getPropiedad().getDireccion(),
+                r.getInquilino(),
+                ChronoUnit.DAYS.between(r.getFechaInicio(), r.getFechaFin()),
+                r.getMontoTotal()
+            )).toList();
+
+        List<LiquidacionResponse.DetalleGastoDto> detalleGastos = gastos.stream()
+            .map(g -> new LiquidacionResponse.DetalleGastoDto(
+                g.getConcepto(),
+                g.getMonto()
+            )).toList();
 
         return new LiquidacionResponse(
             p.getNombre() + " " + p.getApellido(),
-            mes, anio, ingresos, comisiones, totalGastos, totalNeto
+            mes, anio, ingresosBrutos, comisiones, totalGastos, totalNeto,
+            detalleReservas, detalleGastos
         );
     }
 
@@ -71,6 +89,7 @@ public class LiquidacionService {
     public Liquidacion confirmarLiquidacion(Long propietarioId, int mes, int anio) {
         Propietario p = propietarioRepo.findById(propietarioId)
                 .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+                
         List<Reserva> reservas = reservaRepo.buscarPorPropietarioYPeriodoPendientes(propietarioId, mes, anio)
                 .stream()
                 .filter(r -> r.getEstado() != EstadoReserva.PENDIENTE)
@@ -86,9 +105,9 @@ public class LiquidacionService {
         liq.setMes(mes);
         liq.setAnio(anio);
         
-        liq.setTotalBruto(calculo.getIngresos());
+        liq.setTotalBruto(calculo.getIngresosBrutos());
         liq.setTotalComisiones(calculo.getComisiones());
-        liq.setTotalGastos(calculo.getGastos());
+        liq.setTotalGastos(calculo.getGastosMantenimiento());
         liq.setNetoAPagar(calculo.getTotalNeto());
 
         reservas.forEach(r -> r.setLiquidada(true));

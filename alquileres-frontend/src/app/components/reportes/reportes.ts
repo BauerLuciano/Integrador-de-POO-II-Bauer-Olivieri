@@ -19,7 +19,7 @@ export class ReportesComponent implements OnInit {
   idPropietarioSel: number = 0;
   
   periodoSeleccionado: string = new Date().toISOString().slice(0, 7);
-  datos: ReporteLiquidacion | null = null;
+  datos: any | null = null; // Lo flexibilizamos porque cambiamos la estructura del DTO
   historialPagos: any[] = [];
 
   mostrarEstadisticas: boolean = false;
@@ -107,7 +107,7 @@ export class ReportesComponent implements OnInit {
       '¿Liquidar y marcar como pagado?', 
       'Esta acción guardará el registro financiero y no se puede deshacer.', 
       'Sí, liquidar'
-    ).then((result) => {
+    ).then((result: any) => {
       if (result.isConfirmed) {
         const [anio, mes] = this.periodoSeleccionado.split('-').map(Number);
 

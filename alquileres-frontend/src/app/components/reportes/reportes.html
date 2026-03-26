@@ -60,15 +60,24 @@
       <div class="col-md-6">
         <div class="card h-100 border-0 shadow-sm kpi-card bg-success text-white text-center p-4">
           <i class="bi bi-cash-coin fs-1 mb-2 text-white-50"></i>
-          <h6 class="text-uppercase fw-bold opacity-75">Ingresos Generados (Bruto)</h6>
-          <h1 class="display-3 fw-bold mb-0">{{ datosEstadistica.ingresosTotales | currency:'USD':'symbol':'1.0-0' }}</h1>
+          <h6 class="text-uppercase fw-bold opacity-75">Rentabilidad Neta (Dueño)</h6>
+          <h1 class="display-4 fw-bold mb-0">
+            {{ (datosEstadistica.ingresosTotales - datosEstadistica.comisionTotal - (datosEstadistica.gastosTotales || 0)) | currency:'USD':'symbol':'1.0-0' }}
+          </h1>
           
-          <div class="mt-3 pt-3 border-top border-white border-opacity-25">
-            <div class="d-flex justify-content-center align-items-center gap-2">
-              <span class="small opacity-75 text-uppercase fw-bold">Ganancia Inmobiliaria:</span>
-              <span class="fs-4 fw-bolder text-white-50">{{ datosEstadistica.comisionTotal | currency:'USD':'symbol':'1.0-0' }}</span>
+          <div class="mt-3 pt-3 border-top border-white border-opacity-25 text-start px-3">
+            <div class="d-flex justify-content-between x-small mb-1">
+              <span class="opacity-75">Ingresos Brutos:</span>
+              <span class="fw-bold">{{ datosEstadistica.ingresosTotales | currency:'USD':'symbol':'1.0-0' }}</span>
             </div>
-            <small class="opacity-50 x-small">(Suma de las comisiones de estadías concretadas)</small>
+            <div class="d-flex justify-content-between x-small mb-1">
+              <span class="opacity-75">Comisión Inmobiliaria:</span>
+              <span class="fw-bold text-white-50">-{{ datosEstadistica.comisionTotal | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="d-flex justify-content-between x-small mb-1">
+              <span class="opacity-75">Gastos Mantenimiento:</span>
+              <span class="fw-bold text-white-50">-{{ datosEstadistica.gastosTotales || 0 | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -81,12 +90,6 @@
         <div class="card h-100 shadow-sm kpi-card card-bruto">
           <div class="card-header bg-white border-0 py-2 small fw-bold text-muted">INGRESOS BRUTOS</div>
           <div class="card-body py-2">
-            <div class="d-flex justify-content-between x-small mb-1">
-              <span>Estadías:</span><span class="fw-bold">{{ datos.ingresosEstadias | currency:'USD':'symbol':'1.0-0' }}</span>
-            </div>
-            <div class="d-flex justify-content-between x-small mb-1 text-primary">
-              <span>Penalidades:</span><span class="fw-bold">+{{ datos.ingresosPenalidades | currency:'USD':'symbol':'1.0-0' }}</span>
-            </div>
             <div class="kpi-value text-dark border-top mt-2 pt-1">{{ datos.totalIngresosBrutos | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
@@ -96,7 +99,6 @@
         <div class="card h-100 shadow-sm kpi-card card-comision">
           <div class="card-header bg-white border-0 py-2 small fw-bold text-muted">COMISIÓN AGENCIA</div>
           <div class="card-body d-flex flex-column justify-content-center">
-            <p class="mb-0 text-muted small">Retención 20%</p>
             <div class="kpi-value text-danger">- {{ datos.comisionAgencia | currency:'USD':'symbol':'1.0-0' }}</div>
           </div>
         </div>
@@ -108,7 +110,7 @@
           <div class="card-body">
             <div class="overflow-auto" style="max-height: 40px;">
               @for (g of datos.detalleGastos; track $index) {
-                <div class="x-small text-muted text-truncate">• {{ g.motivo }}</div>
+                <div class="x-small text-muted text-truncate">• {{ g.concepto || g.motivo }}: {{ g.monto | currency:'USD':'symbol':'1.0-0' }}</div>
               }
             </div>
             <div class="kpi-value text-danger border-top mt-2 pt-1">- {{ datos.gastosMantenimiento | currency:'USD':'symbol':'1.0-0' }}</div>
@@ -120,7 +122,9 @@
         <div class="card h-100 shadow-lg kpi-card card-neto">
           <div class="card-header bg-transparent border-0 py-2 small">NETO A PAGAR AL DUEÑO</div>
           <div class="card-body d-flex align-items-center justify-content-center">
-            <div class="kpi-value display-6 fw-bold">{{ datos.totalALiquidar | currency:'USD':'symbol':'1.0-0' }}</div>
+            <div class="kpi-value display-6 fw-bold" [ngClass]="{'text-danger': datos.totalALiquidar < 0}">
+              {{ datos.totalALiquidar | currency:'USD':'symbol':'1.0-0' }}
+            </div>
           </div>
         </div>
       </div>
@@ -172,6 +176,7 @@
                 <th>EMISIÓN</th>
                 <th>PERÍODO</th>
                 <th>BRUTO</th>
+                <th>COMISIÓN</th>
                 <th>GASTOS</th>
                 <th class="pe-4">NETO</th>
               </tr>
@@ -184,7 +189,10 @@
                   <td>{{ pago.mes }}/{{ pago.anio }}</td>
                   <td>{{ pago.totalBruto | currency:'USD':'symbol':'1.0-0' }}</td>
                   <td class="text-danger">-{{ pago.totalComisiones | currency:'USD':'symbol':'1.0-0' }}</td>
-                  <td class="pe-4 fw-bold text-success">{{ pago.netoAPagar | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="text-danger">-{{ pago.totalGastos | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="pe-4 fw-bold text-success" [ngClass]="{'text-danger': pago.netoAPagar < 0}">
+                    {{ pago.netoAPagar | currency:'USD':'symbol':'1.0-0' }}
+                  </td>
                 </tr>
               }
             </tbody>
@@ -195,32 +203,17 @@
           <span class="text-muted fw-medium small">
             Total: <span class="badge bg-secondary">{{ historialPagos.length }}</span> liquidaciones
           </span>
-          
           <ul class="pagination pagination-sm mb-0 shadow-sm">
             <li class="page-item" [class.disabled]="paginaActual === 1">
-              <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual - 1">
-                <i class="bi bi-chevron-left me-1"></i> Anterior
-              </button>
+              <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual - 1">Anterior</button>
             </li>
-            <li class="page-item disabled">
-              <span class="page-link text-dark fw-bold bg-light">Página {{ paginaActual }}</span>
-            </li>
+            <li class="page-item disabled"><span class="page-link text-dark fw-bold bg-light">Página {{ paginaActual }}</span></li>
             <li class="page-item" [class.disabled]="paginaActual * 5 >= historialPagos.length">
-              <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual + 1">
-                  Siguiente <i class="bi bi-chevron-right ms-1"></i>
-              </button>
+              <button class="page-link text-primary fw-bold" (click)="paginaActual = paginaActual + 1">Siguiente</button>
             </li>
           </ul>
         </div>
-        
       </div>
-    </div>
-  }
-
-  @if (!datos && !mostrarEstadisticas && historialPagos.length === 0) {
-    <div class="text-center py-5 opacity-50 mt-5">
-      <i class="bi bi-clipboard-data display-1"></i><h4 class="mt-3">Panel de Finanzas</h4>
-      <p>Seleccioná un propietario y un período para ver sus reportes.</p>
     </div>
   }
 </div>
